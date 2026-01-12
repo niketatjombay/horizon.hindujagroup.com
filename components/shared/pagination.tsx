@@ -83,7 +83,7 @@ export function Pagination({
             return (
               <span
                 key={`ellipsis-${index}`}
-                className="flex h-10 w-10 items-center justify-center text-sm text-gray-500"
+                className="flex h-9 w-9 items-center justify-center text-sm text-gray-400"
                 aria-hidden="true"
               >
                 ...
@@ -99,10 +99,10 @@ export function Pagination({
               key={pageNum}
               onClick={() => onPageChange(pageNum)}
               className={cn(
-                'flex h-10 w-10 items-center justify-center rounded-md border text-sm font-medium transition-all',
+                'flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-all',
                 isActive
-                  ? 'border-primary bg-primary text-white'
-                  : 'border-gray-300 bg-white text-gray-600 hover:border-primary hover:bg-gray-50'
+                  ? 'border-primary text-primary bg-transparent'
+                  : 'border-gray-200 bg-transparent text-gray-500 hover:border-gray-400 hover:text-gray-700'
               )}
               aria-label={`Go to page ${pageNum}`}
               aria-current={isActive ? 'page' : undefined}
