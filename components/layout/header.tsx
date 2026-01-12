@@ -3,15 +3,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Bell, LogIn } from 'lucide-react'
 import { useAuth } from '@/lib/hooks'
 import { ProfileMenu } from './profile-menu'
-import { NavigationLinks } from './navigation-links'
-import { Button } from '@/components/ui/button'
 
 export function Header() {
   const pathname = usePathname()
-  const { user, isAuthenticated, isEmployee, isHR, isCHRO } = useAuth()
+  const { isAuthenticated } = useAuth()
 
   // Don't show header on login page
   const isLoginPage = pathname?.startsWith('/login')
@@ -57,39 +54,10 @@ export function Header() {
           </div>
         </Link>
 
-        {/* Desktop Navigation - Only for authenticated users */}
+        {/* Right Section - Profile Menu */}
         {isAuthenticated && !isLoginPage && (
-          <nav className="hidden lg:flex items-center gap-2">
-            <NavigationLinks />
-          </nav>
+          <ProfileMenu />
         )}
-
-        {/* Right Section */}
-        <div className="flex items-center gap-4">
-          {isAuthenticated && !isLoginPage ? (
-            <>
-              {/* Notification Bell (HR/CHRO only) */}
-              {(isHR || isCHRO) && (
-                <button className="relative p-2 rounded-lg hover:bg-gray-800 transition-colors">
-                  <Bell className="h-5 w-5 text-gray-300" />
-                  {/* Notification badge */}
-                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive" />
-                </button>
-              )}
-
-              {/* Profile Menu */}
-              <ProfileMenu />
-            </>
-          ) : !isLoginPage ? (
-            /* Login Button for non-authenticated users */
-            <Link href="/login">
-              <Button variant="secondary" size="sm" className="gap-2">
-                <LogIn className="h-4 w-4" />
-                Login
-              </Button>
-            </Link>
-          ) : null}
-        </div>
       </div>
     </header>
   )
