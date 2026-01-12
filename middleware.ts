@@ -23,7 +23,7 @@ function hasRouteAccess(role: UserRole | null, pathname: string): boolean {
 
   // Define allowed routes per role
   const routePermissions: Record<Exclude<UserRole, 'admin'>, string[]> = {
-    employee: ['/dashboard', '/jobs', '/applications', '/saved', '/profile'],
+    employee: ['/jobs', '/profile'],
     hr: ['/hr/dashboard', '/hr/jobs', '/hr/applicants', '/profile'],
     chro: ['/chro/dashboard', '/chro/reports', '/profile'],
   }
@@ -47,7 +47,7 @@ function getDashboardForRole(role: UserRole | null): string {
     case 'chro':
       return '/chro/dashboard'
     default:
-      return '/dashboard'
+      return '/jobs'
   }
 }
 
@@ -103,7 +103,7 @@ export function middleware(request: NextRequest) {
   if (userRole) {
     // Admin routes require admin role
     if (pathname.startsWith('/admin') && userRole !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      return NextResponse.redirect(new URL('/jobs', request.url))
     }
 
     // Check if user has access to this route

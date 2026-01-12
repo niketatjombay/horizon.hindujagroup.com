@@ -30,7 +30,7 @@ const ROLE_OPTIONS: RoleOption[] = [
     label: 'Employee',
     description: 'Browse jobs, apply, and track applications',
     icon: <User className="h-5 w-5" />,
-    redirectTo: '/dashboard',
+    redirectTo: '/jobs',
     username: 'employee@hinduja.com',
     password: 'employee123',
     color: {
@@ -115,7 +115,7 @@ function LoginPageContent() {
   const [isLoading, setIsLoading] = useState<UserRole | null>(null)
   const [expandedRole, setExpandedRole] = useState<UserRole | null>(null)
 
-  const redirectTo = searchParams.get('redirect') || '/dashboard'
+  const redirectTo = searchParams.get('redirect') || '/jobs'
 
   const handleLogin = async (roleOption: RoleOption) => {
     setIsLoading(roleOption.role)
