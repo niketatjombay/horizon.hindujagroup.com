@@ -266,7 +266,7 @@ export function ApplicationModal({
           </form>
 
           {/* Footer */}
-          <DialogFooter className="sticky bottom-0 z-10 border-t border-gray-200 bg-white px-6 py-4">
+          <DialogFooter className="mt-auto shrink-0 border-t border-gray-200 bg-white px-6 py-4">
             <Button
               type="button"
               variant="ghost"
