@@ -1,5 +1,6 @@
 export { JobCard } from './job-card'
 export { JobCardGrid } from './job-card-grid'
+export { JobListItem, JobList } from './job-list-item'
 export { JobFilters } from './job-filters'
 export { FilterSection } from './filter-section'
 export { ActiveFilterChips } from './active-filter-chips'

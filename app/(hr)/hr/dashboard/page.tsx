@@ -2,12 +2,11 @@
 
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { FileText, Clock, Calendar, Briefcase } from 'lucide-react'
+import { FileText, Clock, Briefcase } from 'lucide-react'
 import {
   MetricCard,
   RecentApplicationsTable,
   TopJobsList,
-  QuickActions,
 } from '@/components/hr'
 import { useApplications } from '@/lib/hooks/use-applications'
 import { useJobs } from '@/lib/hooks/use-jobs'
@@ -34,15 +33,11 @@ export default function HRDashboardPage() {
     const pendingReview = applications.filter(
       (app) => app.status === 'submitted' || app.status === 'under_review'
     ).length
-    const interviewsScheduled = applications.filter(
-      (app) => app.status === 'interview_scheduled'
-    ).length
     const openPositions = jobsData?.data.filter((job) => job.status === 'open').length || 0
 
     return {
       totalApplications,
       pendingReview,
-      interviewsScheduled,
       openPositions,
     }
   }, [applications, jobsData])
@@ -78,7 +73,7 @@ export default function HRDashboardPage() {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-3">
         <MetricCard
           icon={FileText}
           label="Total Applications"
@@ -94,14 +89,6 @@ export default function HRDashboardPage() {
           iconBg="bg-warning/10"
           iconColor="text-warning"
           onClick={() => router.push('/hr/applicants?status=under_review')}
-        />
-        <MetricCard
-          icon={Calendar}
-          label="Interviews Scheduled"
-          value={isLoading ? '-' : metrics.interviewsScheduled}
-          iconBg="bg-info/10"
-          iconColor="text-info"
-          onClick={() => router.push('/hr/applicants?status=interview_scheduled')}
         />
         <MetricCard
           icon={Briefcase}
@@ -150,9 +137,6 @@ export default function HRDashboardPage() {
           <TopJobsList jobs={topJobs} isLoading={isLoadingJobs} />
         </div>
       </div>
-
-      {/* Quick Actions */}
-      <QuickActions />
     </div>
   )
 }

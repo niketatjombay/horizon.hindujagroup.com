@@ -22,8 +22,6 @@ import {
   ResumeViewer,
   ApplicationTimeline,
   StatusChangeForm,
-  ContactActions,
-  RelatedApplications,
   getStatusOption,
 } from '@/components/hr'
 import {
@@ -285,24 +283,6 @@ export default function ApplicantDetailPage() {
             onStatusChange={handleStatusChange}
             disabled={updateStatus.isPending}
           />
-
-          {/* Contact Actions */}
-          <ContactActions
-            email={applicant.userEmail}
-            phone={applicant.phone}
-            onScheduleInterview={() => {
-              // TODO: Implement interview scheduling
-              alert('Interview scheduling coming soon!')
-            }}
-          />
-
-          {/* Related Applications */}
-          {applicant.relatedApplications.length > 0 && (
-            <RelatedApplications
-              applications={applicant.relatedApplications}
-              currentApplicationId={applicant.id}
-            />
-          )}
         </div>
       </div>
 

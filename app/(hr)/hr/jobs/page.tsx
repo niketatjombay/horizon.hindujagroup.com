@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import {
   Search,
-  Plus,
   MapPin,
   Calendar,
   Users,
@@ -14,7 +13,6 @@ import {
   Edit,
   XCircle,
   CheckCircle,
-  ChevronDown,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -308,19 +306,13 @@ export default function HRJobsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
-            Company Jobs
-          </h1>
-          <p className="mt-1 text-gray-600">
-            Manage job postings and view applicants
-          </p>
-        </div>
-        <Button disabled className="gap-2 w-full sm:w-auto">
-          <Plus className="h-4 w-4" />
-          Post New Job
-        </Button>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
+          Company Jobs
+        </h1>
+        <p className="mt-1 text-gray-600">
+          Manage job postings and view applicants
+        </p>
       </div>
 
       {/* Filters */}

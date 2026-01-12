@@ -5,11 +5,10 @@ import { notFound } from 'next/navigation'
 import { Briefcase, Clock, Users, MapPin, IndianRupee, Building2 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { JobDetailHeader, CompanySidebar, SimilarJobs, ApplicationModal } from '@/components/jobs'
+import { JobDetailHeader, ApplicationModal } from '@/components/jobs'
 import { CardSkeleton } from '@/components/shared/loading-skeleton'
 import { ErrorState } from '@/components/shared/error-state'
 import { useJob } from '@/lib/hooks/use-jobs'
-import { getMockJobsByCompany } from '@/mock/services/jobs'
 
 interface JobDetailPageProps {
   params: Promise<{ id: string }>
@@ -39,10 +38,6 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
     )
   }
 
-  // Get active jobs count for the company
-  const companyJobs = getMockJobsByCompany(job.companyId)
-  const activeJobsCount = companyJobs.filter((j) => j.status === 'open').length
-
   // Format salary range for display in info grid
   const salaryRange =
     job.salaryMin && job.salaryMax
@@ -55,9 +50,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
       <JobDetailHeader job={job} onApplyClick={handleApplyClick} />
 
       {/* Main Content Area */}
-      <div className="flex flex-col gap-8 lg:flex-row">
-        {/* Left: Job Details */}
-        <div className="min-w-0 flex-1 space-y-6">
+      <div className="space-y-6 max-w-4xl">
           {/* Description Section */}
           <Card className="p-6">
             <h2 className="mb-4 border-b border-gray-200 pb-3 text-h3 font-semibold text-gray-900">
@@ -160,28 +153,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
               </div>
             </Card>
           )}
-        </div>
-
-        {/* Right: Company Sidebar (Desktop only) */}
-        <div className="hidden w-[360px] flex-shrink-0 lg:block">
-          <CompanySidebar
-            company={{
-              name: job.companyName,
-              logo: job.companyLogo,
-              description: `${job.companyName} is a leading company in the Hinduja Group, known for excellence and innovation.`,
-              employeeCount: '10,000+',
-              activeJobs: activeJobsCount,
-            }}
-          />
-        </div>
       </div>
-
-      {/* Similar Jobs Section */}
-      <SimilarJobs
-        currentJobId={job.id}
-        jobFunction={job.function}
-        companyName={job.companyName}
-      />
 
       {/* Application Modal */}
       <ApplicationModal
@@ -243,15 +215,10 @@ function JobDetailSkeleton() {
       </div>
 
       {/* Content skeleton */}
-      <div className="flex flex-col gap-8 lg:flex-row">
-        <div className="min-w-0 flex-1 space-y-6">
-          <CardSkeleton />
-          <CardSkeleton />
-          <CardSkeleton />
-        </div>
-        <div className="hidden w-[360px] flex-shrink-0 lg:block">
-          <CardSkeleton />
-        </div>
+      <div className="max-w-4xl space-y-6">
+        <CardSkeleton />
+        <CardSkeleton />
+        <CardSkeleton />
       </div>
     </div>
   )

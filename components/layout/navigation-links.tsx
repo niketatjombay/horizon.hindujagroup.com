@@ -52,16 +52,16 @@ export function NavigationLinks() {
             key={link.href}
             href={link.href}
             className={cn(
-              'relative px-4 py-3 text-base font-medium transition-colors rounded-lg',
+              'relative px-4 py-3 text-base font-medium transition-colors',
               isActive
-                ? 'text-primary bg-primary-light'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                ? 'text-primary'
+                : 'text-gray-400 hover:text-white'
             )}
           >
             {link.label}
-            {/* Active indicator */}
+            {/* Active indicator - orange underline */}
             {isActive && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
             )}
           </Link>
         )

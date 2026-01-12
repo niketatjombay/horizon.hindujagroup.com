@@ -292,7 +292,7 @@ function HRApplicantsPageContent() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
-          Applicants
+          Total Applications
         </h1>
         <p className="mt-1 text-gray-600">
           Review and manage applications for your company's jobs

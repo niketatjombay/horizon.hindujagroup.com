@@ -180,7 +180,7 @@ export function SearchBar({
     <div className={cn('relative', className)}>
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-600 pointer-events-none" />
+        <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500 pointer-events-none" />
 
         <input
           ref={inputRef}
@@ -191,10 +191,9 @@ export function SearchBar({
           onFocus={() => setIsFocused(true)}
           onKeyDown={handleKeyDown}
           className={cn(
-            'h-10 rounded-full border-0 bg-gray-50 pl-10 pr-10 text-base outline-none transition-all duration-300',
-            'placeholder:text-gray-500',
-            isFocused && 'bg-white ring-2 ring-primary/20 border border-primary',
-            expandOnFocus && isFocused ? 'w-[480px]' : 'w-80'
+            'h-12 w-full rounded-full border-0 bg-transparent pl-12 pr-12 text-base outline-none transition-all duration-300',
+            'placeholder:text-gray-400',
+            isFocused && 'ring-2 ring-primary/30'
           )}
         />
 
@@ -202,7 +201,7 @@ export function SearchBar({
         {query && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 transition-colors hover:text-destructive"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-destructive"
             type="button"
           >
             <X className="h-5 w-5" />
