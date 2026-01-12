@@ -64,7 +64,7 @@ export function MetricCard({
     <Component
       onClick={onClick}
       className={cn(
-        'flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-6 text-left',
+        'flex items-center gap-4 rounded-xl border border-gray-200 bg-white px-5 py-4 text-left',
         'border-l-4 shadow-card card-hover',
         styles.border,
         onClick && 'cursor-pointer'
@@ -72,15 +72,15 @@ export function MetricCard({
     >
       <div
         className={cn(
-          'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl',
+          'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
           iconBg || styles.iconBg
         )}
       >
-        <Icon className={cn('h-6 w-6', iconColor || styles.iconColor)} />
+        <Icon className={cn('h-5 w-5', iconColor || styles.iconColor)} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-500 truncate">{label}</p>
-        <p className="mt-1 text-3xl font-bold leading-tight text-gray-900">
+        <p className="text-xs font-medium text-gray-500 truncate">{label}</p>
+        <p className="text-2xl font-bold leading-tight text-gray-900">
           {value}
         </p>
         {trend && (

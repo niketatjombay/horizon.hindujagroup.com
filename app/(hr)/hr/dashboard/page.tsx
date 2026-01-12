@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { FileText, Clock, Briefcase } from 'lucide-react'
 import {
@@ -8,12 +8,25 @@ import {
   RecentApplicationsTable,
   TopJobsList,
 } from '@/components/hr'
+import { useAuth } from '@/lib/hooks'
 import { useApplications } from '@/lib/hooks/use-applications'
 import { useJobs } from '@/lib/hooks/use-jobs'
-import type { Job } from '@/types'
+import { cn } from '@/lib/utils'
+import type { Job, ApplicationStatus } from '@/types'
+
+type QuickFilter = 'all' | 'submitted' | 'under_review' | 'shortlisted'
+
+const QUICK_FILTERS: { id: QuickFilter; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'submitted', label: 'New' },
+  { id: 'under_review', label: 'Under Review' },
+  { id: 'shortlisted', label: 'Shortlisted' },
+]
 
 export default function HRDashboardPage() {
   const router = useRouter()
+  const { user } = useAuth()
+  const [quickFilter, setQuickFilter] = useState<QuickFilter>('all')
 
   // Fetch recent applications
   const {
@@ -42,6 +55,14 @@ export default function HRDashboardPage() {
     }
   }, [applications, jobsData])
 
+  // Filter applications based on quick filter
+  const filteredApplications = useMemo(() => {
+    if (quickFilter === 'all') return applications.slice(0, 10)
+    return applications
+      .filter((app) => app.status === quickFilter)
+      .slice(0, 10)
+  }, [applications, quickFilter])
+
   // Calculate top jobs by application count
   const topJobs = useMemo(() => {
     if (!jobsData?.data) return []
@@ -59,15 +80,16 @@ export default function HRDashboardPage() {
   }, [jobsData])
 
   const isLoading = isLoadingApplications || isLoadingJobs
+  const firstName = user?.firstName || 'there'
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
-          Good morning!
+          Welcome, {firstName}!
         </h1>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-1 text-gray-600">
           Here&apos;s what&apos;s happening with your job postings today.
         </p>
       </div>
@@ -104,36 +126,39 @@ export default function HRDashboardPage() {
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Recent Applications Table */}
         <div className="lg:col-span-2">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4">
             <h2 className="text-xl font-semibold text-gray-900">
               Recent Applications
             </h2>
-            <button
-              onClick={() => router.push('/hr/applicants')}
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              View All
-            </button>
+            {/* Quick Filters */}
+            <div className="mt-3 flex flex-wrap gap-2">
+              {QUICK_FILTERS.map((filter) => (
+                <button
+                  key={filter.id}
+                  onClick={() => setQuickFilter(filter.id)}
+                  className={cn(
+                    'px-3 py-1.5 text-sm font-medium rounded-full border transition-colors',
+                    quickFilter === filter.id
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                  )}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
           </div>
           <RecentApplicationsTable
-            applications={applications.slice(0, 10)}
+            applications={filteredApplications}
             isLoading={isLoadingApplications}
           />
         </div>
 
         {/* Top Jobs Sidebar */}
         <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Top Jobs
-            </h2>
-            <button
-              onClick={() => router.push('/hr/jobs')}
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              View All
-            </button>
-          </div>
+          <h2 className="mb-4 text-xl font-semibold text-gray-900">
+            Top Jobs
+          </h2>
           <TopJobsList jobs={topJobs} isLoading={isLoadingJobs} />
         </div>
       </div>
