@@ -128,9 +128,18 @@ export default function HRDashboardPage() {
         {/* Recent Applications Table */}
         <div className="lg:col-span-2">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Recent Applications
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Recent Applications
+              </h2>
+              <Link
+                href="/hr/applicants"
+                className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+              >
+                View all
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
             {/* Quick Filters */}
             <div className="mt-3 flex flex-wrap gap-2">
               {QUICK_FILTERS.map((filter) => (
@@ -153,28 +162,23 @@ export default function HRDashboardPage() {
             applications={filteredApplications}
             isLoading={isLoadingApplications}
           />
-          <Link
-            href="/hr/applicants"
-            className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-primary hover:underline"
-          >
-            View all applicants
-            <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
 
         {/* Top Jobs Sidebar */}
         <div>
-          <h2 className="mb-4 text-xl font-semibold text-gray-900">
-            Top Jobs
-          </h2>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Top Jobs
+            </h2>
+            <Link
+              href="/hr/jobs"
+              className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            >
+              View all
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
           <TopJobsList jobs={topJobs} isLoading={isLoadingJobs} />
-          <Link
-            href="/hr/jobs"
-            className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-primary hover:underline"
-          >
-            View all jobs
-            <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Link from 'next/link'
 import {
   Briefcase,
   FileText,
@@ -13,6 +14,7 @@ import {
   Lightbulb,
   ArrowUp,
   ArrowDown,
+  ArrowRight,
   AlertTriangle,
   Sparkles,
   UserCheck,
@@ -231,11 +233,20 @@ export default function CHRODashboardPage() {
 
       {/* Company-wise Mobility Table */}
       <Card className="p-6">
-        <div className="mb-4 flex items-center gap-2">
-          <Building2 className="h-5 w-5 text-gray-600" />
-          <h2 className="text-lg font-semibold text-gray-900">
-            Company-wise Mobility View
-          </h2>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-gray-600" />
+            <h2 className="text-lg font-semibold text-gray-900">
+              Company-wise Mobility View
+            </h2>
+          </div>
+          <Link
+            href="/chro/reports"
+            className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+          >
+            View reports
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
         <div className="overflow-x-auto">
