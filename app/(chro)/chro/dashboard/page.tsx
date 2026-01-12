@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import Link from 'next/link'
+import { useState } from 'react'
 import {
   Briefcase,
   FileText,
@@ -14,7 +13,6 @@ import {
   Lightbulb,
   ArrowUp,
   ArrowDown,
-  ArrowRight,
   AlertTriangle,
   Sparkles,
   UserCheck,
@@ -237,33 +235,24 @@ export default function CHRODashboardPage() {
 
       {/* Company-wise Mobility Table */}
       <Card className="p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-gray-600" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              Company-wise Mobility View
-            </h2>
-          </div>
-          <Link
-            href="/chro/reports"
-            className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-          >
-            View reports
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+        <div className="mb-4 flex items-center gap-2">
+          <Building2 className="h-5 w-5 text-gray-600" />
+          <h2 className="text-lg font-semibold text-gray-900">
+            Company-wise Mobility View
+          </h2>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 text-left">
-                <th className="pb-3 font-medium text-gray-600">Company</th>
-                <th className="pb-3 font-medium text-gray-600 text-right">Jobs Posted</th>
-                <th className="pb-3 font-medium text-gray-600 text-right">Applications</th>
-                <th className="pb-3 font-medium text-gray-600 text-right">Internal Hires</th>
-                <th className="pb-3 font-medium text-gray-600 text-right">Conversion %</th>
-                <th className="pb-3 font-medium text-gray-600 text-right">% Workforce Applied</th>
-                <th className="pb-3 font-medium text-gray-600">Status</th>
+                <th className="pb-3 pr-4 font-medium text-gray-600 whitespace-nowrap">Company</th>
+                <th className="pb-3 px-4 font-medium text-gray-600 text-right whitespace-nowrap">Jobs Posted</th>
+                <th className="pb-3 px-4 font-medium text-gray-600 text-right whitespace-nowrap">Applications</th>
+                <th className="pb-3 px-4 font-medium text-gray-600 text-right whitespace-nowrap">Internal Hires</th>
+                <th className="pb-3 px-4 font-medium text-gray-600 text-right whitespace-nowrap">Conversion %</th>
+                <th className="pb-3 px-4 font-medium text-gray-600 text-right whitespace-nowrap">% Workforce Applied</th>
+                <th className="pb-3 pl-4 font-medium text-gray-600 whitespace-nowrap">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -275,11 +264,11 @@ export default function CHRODashboardPage() {
 
                 return (
                   <tr key={company.name} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 font-medium text-gray-900">{company.name}</td>
-                    <td className="py-3 text-right text-gray-700">{company.jobsPosted}</td>
-                    <td className="py-3 text-right text-gray-700">{company.applications}</td>
-                    <td className="py-3 text-right text-gray-700">{company.hires}</td>
-                    <td className="py-3 text-right">
+                    <td className="py-3 pr-4 font-medium text-gray-900 whitespace-nowrap">{company.name}</td>
+                    <td className="py-3 px-4 text-right text-gray-700">{company.jobsPosted}</td>
+                    <td className="py-3 px-4 text-right text-gray-700">{company.applications}</td>
+                    <td className="py-3 px-4 text-right text-gray-700">{company.hires}</td>
+                    <td className="py-3 px-4 text-right">
                       <span className={cn(
                         'font-medium',
                         parseFloat(conversion) >= 10 ? 'text-success' :
@@ -288,8 +277,8 @@ export default function CHRODashboardPage() {
                         {conversion}%
                       </span>
                     </td>
-                    <td className="py-3 text-right text-gray-700">{workforceApplied}%</td>
-                    <td className="py-3">
+                    <td className="py-3 px-4 text-right text-gray-700">{workforceApplied}%</td>
+                    <td className="py-3 pl-4">
                       <CompanyStatusBadge flag={company.flag} />
                     </td>
                   </tr>
