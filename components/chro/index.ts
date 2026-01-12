@@ -1,0 +1,7 @@
+export { HiringTrendsChart } from './hiring-trends-chart'
+export { PipelineChart } from './pipeline-chart'
+export { CompanyPerformanceChart } from './company-performance-chart'
+export { HiringFunnel } from './hiring-funnel'
+export { DepartmentBreakdown } from './department-breakdown'
+export { ActivityFeed } from './activity-feed'
+export { DashboardFilters } from './dashboard-filters'
