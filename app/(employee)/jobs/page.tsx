@@ -2,7 +2,8 @@
 
 import { Suspense, useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { X, FileText, Bookmark } from 'lucide-react'
+import { X, FileText, Bookmark, Sparkles } from 'lucide-react'
+import { useAuth } from '@/lib/hooks'
 import { SearchBar } from '@/components/shared/search-bar'
 import { Pagination } from '@/components/shared/pagination'
 import { JobFilters } from '@/components/jobs/job-filters'
@@ -40,6 +41,7 @@ const STATUS_ORDER: ApplicationStatus[] = [
 function JobsPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { user } = useAuth()
 
   // Tab state from URL
   const tabParam = searchParams.get('tab')
@@ -186,8 +188,27 @@ function JobsPageContent() {
   const showingFrom = totalJobs > 0 ? (filters.page - 1) * JOBS_PER_PAGE + 1 : 0
   const showingTo = Math.min(filters.page * JOBS_PER_PAGE, totalJobs)
 
+  const firstName = user?.firstName || 'there'
+
   return (
-    <div>
+    <div className="space-y-6">
+      {/* Welcome Banner */}
+      <div className="rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 px-6 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+            <Sparkles className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900">
+              Welcome back, {firstName}!
+            </h1>
+            <p className="text-sm text-gray-600">
+              Explore opportunities across 17 Hinduja Group companies
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Main Layout */}
       <div className="flex gap-6">
         {/* Filters Sidebar */}
