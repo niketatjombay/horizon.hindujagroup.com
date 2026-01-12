@@ -188,194 +188,181 @@ function JobsPageContent() {
 
   return (
     <div>
-      {/* Compact Status Banner */}
-      <div className="mb-4 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => handleTabChange('applications')}
-            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <FileText className="h-4 w-4" />
-            <span className="font-medium">{applicationsCount}</span>
-            <span className="hidden sm:inline">Applications</span>
-          </button>
-          <div className="h-4 w-px bg-gray-300" />
-          <button
-            onClick={() => handleTabChange('saved')}
-            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <Bookmark className="h-4 w-4" />
-            <span className="font-medium">{savedCount}</span>
-            <span className="hidden sm:inline">Saved</span>
-          </button>
-        </div>
-        <span className="text-xs text-gray-400">
-          {totalJobs} jobs available
-        </span>
-      </div>
+      {/* Main Layout */}
+      <div className="flex gap-6">
+        {/* Filters Sidebar */}
+        <JobFilters
+          filters={componentFilters}
+          onFiltersChange={handleFiltersChange}
+        />
 
-      {/* Tabs */}
-      <div className="mb-6 border-b border-gray-200">
-        <nav className="flex gap-6" aria-label="Tabs">
-          {[
-            { id: 'jobs', label: 'Jobs' },
-            { id: 'applications', label: 'My Applications' },
-            { id: 'saved', label: 'Saved Jobs' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTabChange(tab.id as TabType)}
-              className={cn(
-                'relative py-3 text-sm font-medium transition-colors',
-                activeTab === tab.id
-                  ? 'text-primary'
-                  : 'text-gray-500 hover:text-gray-700'
-              )}
-            >
-              {tab.label}
-              {activeTab === tab.id && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
-              )}
-            </button>
-          ))}
-        </nav>
-      </div>
+        {/* Main Content */}
+        <main className="min-w-0 flex-1">
+          {/* Search Bar - Highlighted */}
+          <div className="mb-4 rounded-lg border border-gray-300 bg-white shadow-sm">
+            <SearchBar
+              placeholder="Search by job title, skills, or keywords..."
+              onSearch={handleSearch}
+              expandOnFocus={false}
+              className="w-full"
+            />
+          </div>
 
-      {/* Jobs Tab Content */}
-      {activeTab === 'jobs' && (
-        <div className="flex gap-6">
-          {/* Filters Sidebar */}
-          <JobFilters
-            filters={componentFilters}
-            onFiltersChange={handleFiltersChange}
-          />
-
-          {/* Main Content */}
-          <main className="min-w-0 flex-1">
-            {/* Search Bar */}
-            <div className="mb-4">
-              <SearchBar
-                placeholder="Search by job title, skills, or keywords..."
-                onSearch={handleSearch}
-                expandOnFocus={false}
-                className="w-full"
-              />
-            </div>
-
-            {/* Result Count */}
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-sm text-gray-600">
-                {isLoadingJobs ? (
-                  <span className="text-gray-400">Loading...</span>
-                ) : totalJobs > 0 ? (
-                  <>Showing {showingFrom}-{showingTo} of <span className="font-semibold">{totalJobs}</span> jobs</>
-                ) : (
-                  'No jobs found'
-                )}
-              </p>
-              {activeFilterCount > 0 && (
+          {/* Tabs */}
+          <div className="mb-4 flex items-center justify-between border-b border-gray-200">
+            <nav className="flex gap-6" aria-label="Tabs">
+              {[
+                { id: 'jobs', label: 'Jobs' },
+                { id: 'applications', label: 'My Applications' },
+                { id: 'saved', label: 'Saved Jobs' },
+              ].map((tab) => (
                 <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                  key={tab.id}
+                  onClick={() => handleTabChange(tab.id as TabType)}
+                  className={cn(
+                    'relative py-3 text-sm font-medium transition-colors',
+                    activeTab === tab.id
+                      ? 'text-primary'
+                      : 'text-gray-500 hover:text-gray-700'
+                  )}
                 >
-                  <X className="h-3.5 w-3.5" />
-                  Clear filters
+                  {tab.label}
+                  {activeTab === tab.id && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                  )}
                 </button>
+              ))}
+            </nav>
+            <div className="flex items-center gap-3 text-xs text-gray-500">
+              <span className="flex items-center gap-1">
+                <FileText className="h-3.5 w-3.5" />
+                {applicationsCount} applied
+              </span>
+              <span className="flex items-center gap-1">
+                <Bookmark className="h-3.5 w-3.5" />
+                {savedCount} saved
+              </span>
+            </div>
+          </div>
+
+          {/* Jobs Tab Content */}
+          {activeTab === 'jobs' && (
+            <>
+              {/* Result Count */}
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm text-gray-600">
+                  {isLoadingJobs ? (
+                    <span className="text-gray-400">Loading...</span>
+                  ) : totalJobs > 0 ? (
+                    <>Showing {showingFrom}-{showingTo} of <span className="font-semibold">{totalJobs}</span> jobs</>
+                  ) : (
+                    'No jobs found'
+                  )}
+                </p>
+                {activeFilterCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Clear filters
+                  </button>
+                )}
+              </div>
+
+              {/* Job List */}
+              {isLoadingJobs ? (
+                <LoadingSkeleton type="card" count={8} />
+              ) : jobs.length > 0 ? (
+                <>
+                  <JobList jobs={jobs} onSaveToggle={handleSaveToggle} />
+                  {totalPages > 1 && (
+                    <Pagination
+                      currentPage={filters.page}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                      className="mt-8"
+                    />
+                  )}
+                </>
+              ) : (
+                <NoJobsFound onAction={clearFilters} />
+              )}
+            </>
+          )}
+
+          {/* Applications Tab Content */}
+          {activeTab === 'applications' && (
+            <div>
+              {isLoadingApplications ? (
+                <LoadingSkeleton type="card" count={5} />
+              ) : applications.length === 0 ? (
+                <NoApplications onAction={() => handleTabChange('jobs')} />
+              ) : (
+                <>
+                  <ApplicationFilters
+                    statusCounts={statusCounts}
+                    selectedStatus={selectedStatus}
+                    onStatusChange={setSelectedStatus}
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                  />
+                  <div className="mb-4 text-sm text-gray-600">
+                    Showing {filteredApplications.length} of {applications.length} applications
+                  </div>
+                  {filteredApplications.length === 0 ? (
+                    <div className="rounded-lg border border-gray-200 bg-white py-12 text-center">
+                      <p className="text-gray-600">No applications match the selected filter</p>
+                      <button
+                        onClick={() => setSelectedStatus('all')}
+                        className="mt-2 text-sm text-primary hover:underline"
+                      >
+                        Clear filter
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-4">
+                      {filteredApplications.map((application) => (
+                        <ApplicationCard
+                          key={application.id}
+                          application={application}
+                          onWithdraw={handleWithdrawClick}
+                          onViewDetails={handleViewDetails}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+              <WithdrawDialog
+                application={applicationToWithdraw}
+                open={withdrawDialogOpen}
+                onOpenChange={setWithdrawDialogOpen}
+                onConfirm={handleWithdrawConfirm}
+                isLoading={withdrawMutation.isPending}
+              />
+            </div>
+          )}
+
+          {/* Saved Jobs Tab Content */}
+          {activeTab === 'saved' && (
+            <div>
+              {isLoadingSaved ? (
+                <LoadingSkeleton type="card" count={6} />
+              ) : savedJobs.length === 0 ? (
+                <NoSavedJobs onAction={() => handleTabChange('jobs')} />
+              ) : (
+                <>
+                  <p className="mb-4 text-sm text-gray-600">
+                    {savedJobs.length} saved job{savedJobs.length !== 1 ? 's' : ''}
+                  </p>
+                  <JobList jobs={savedJobs} onSaveToggle={handleSaveToggle} />
+                </>
               )}
             </div>
-
-            {/* Job List */}
-            {isLoadingJobs ? (
-              <LoadingSkeleton type="card" count={8} />
-            ) : jobs.length > 0 ? (
-              <>
-                <JobList jobs={jobs} onSaveToggle={handleSaveToggle} />
-                {totalPages > 1 && (
-                  <Pagination
-                    currentPage={filters.page}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    className="mt-8"
-                  />
-                )}
-              </>
-            ) : (
-              <NoJobsFound onAction={clearFilters} />
-            )}
-          </main>
-        </div>
-      )}
-
-      {/* Applications Tab Content */}
-      {activeTab === 'applications' && (
-        <div>
-          {isLoadingApplications ? (
-            <LoadingSkeleton type="card" count={5} />
-          ) : applications.length === 0 ? (
-            <NoApplications onAction={() => handleTabChange('jobs')} />
-          ) : (
-            <>
-              <ApplicationFilters
-                statusCounts={statusCounts}
-                selectedStatus={selectedStatus}
-                onStatusChange={setSelectedStatus}
-                sortBy={sortBy}
-                onSortChange={setSortBy}
-              />
-              <div className="mb-4 text-sm text-gray-600">
-                Showing {filteredApplications.length} of {applications.length} applications
-              </div>
-              {filteredApplications.length === 0 ? (
-                <div className="rounded-lg border border-gray-200 bg-white py-12 text-center">
-                  <p className="text-gray-600">No applications match the selected filter</p>
-                  <button
-                    onClick={() => setSelectedStatus('all')}
-                    className="mt-2 text-sm text-primary hover:underline"
-                  >
-                    Clear filter
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  {filteredApplications.map((application) => (
-                    <ApplicationCard
-                      key={application.id}
-                      application={application}
-                      onWithdraw={handleWithdrawClick}
-                      onViewDetails={handleViewDetails}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
           )}
-          <WithdrawDialog
-            application={applicationToWithdraw}
-            open={withdrawDialogOpen}
-            onOpenChange={setWithdrawDialogOpen}
-            onConfirm={handleWithdrawConfirm}
-            isLoading={withdrawMutation.isPending}
-          />
-        </div>
-      )}
-
-      {/* Saved Jobs Tab Content */}
-      {activeTab === 'saved' && (
-        <div>
-          {isLoadingSaved ? (
-            <LoadingSkeleton type="card" count={6} />
-          ) : savedJobs.length === 0 ? (
-            <NoSavedJobs onAction={() => handleTabChange('jobs')} />
-          ) : (
-            <>
-              <p className="mb-4 text-sm text-gray-600">
-                {savedJobs.length} saved job{savedJobs.length !== 1 ? 's' : ''}
-              </p>
-              <JobList jobs={savedJobs} onSaveToggle={handleSaveToggle} />
-            </>
-          )}
-        </div>
-      )}
+        </main>
+      </div>
     </div>
   )
 }
@@ -383,13 +370,13 @@ function JobsPageContent() {
 function JobsPageFallback() {
   return (
     <div>
-      <div className="mb-4 h-12 animate-pulse rounded-lg bg-gray-100" />
-      <div className="mb-6 h-10 animate-pulse rounded bg-gray-100" />
       <div className="flex gap-6">
         <div className="hidden w-64 shrink-0 md:block">
           <div className="h-96 animate-pulse rounded-lg bg-gray-100" />
         </div>
         <div className="flex-1 space-y-3">
+          <div className="mb-4 h-12 animate-pulse rounded-lg bg-gray-100" />
+          <div className="mb-4 h-10 animate-pulse rounded bg-gray-100" />
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="h-20 animate-pulse rounded-lg bg-gray-100" />
           ))}

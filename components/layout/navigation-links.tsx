@@ -13,11 +13,8 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  // Employee routes
-  { href: '/dashboard', label: 'Dashboard', roles: ['employee'] },
-  { href: '/jobs', label: 'Jobs', roles: ['employee', 'hr'] },
-  { href: '/applications', label: 'Applications', roles: ['employee'] },
-  { href: '/saved', label: 'Saved', roles: ['employee'] },
+  // Employee routes - Jobs is the main landing page
+  { href: '/jobs', label: 'Jobs', roles: ['employee'] },
   // HR routes
   { href: '/hr/dashboard', label: 'Dashboard', roles: ['hr'] },
   { href: '/applicants', label: 'Applicants', roles: ['hr'] },

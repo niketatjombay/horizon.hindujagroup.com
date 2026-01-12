@@ -3,11 +3,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Search, Bell, LogIn } from 'lucide-react'
+import { Bell, LogIn } from 'lucide-react'
 import { useAuth } from '@/lib/hooks'
 import { ProfileMenu } from './profile-menu'
 import { NavigationLinks } from './navigation-links'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
 export function Header() {
@@ -21,7 +20,7 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-gray-900 shadow-lg">
       <div className="flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
         {/* Logo Section */}
-        <Link href={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-3">
+        <Link href={isAuthenticated ? '/jobs' : '/'} className="flex items-center gap-3">
           {/* Jombay Logo */}
           <div className="relative h-8 w-auto">
             <Image
@@ -63,20 +62,6 @@ export function Header() {
           <nav className="hidden lg:flex items-center gap-2">
             <NavigationLinks />
           </nav>
-        )}
-
-        {/* Search Bar (Employee only, Desktop) */}
-        {isAuthenticated && isEmployee && !isLoginPage && (
-          <div className="hidden md:block flex-1 max-w-md mx-8">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Search jobs..."
-                className="pl-10 rounded-full bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:bg-gray-700 focus-visible:border-primary"
-              />
-            </div>
-          </div>
         )}
 
         {/* Right Section */}

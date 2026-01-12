@@ -38,7 +38,7 @@ export function hasRouteAccess(role: UserRole | null, pathname: string): boolean
 
   // Define allowed routes per role
   const routePermissions: Record<UserRole, string[]> = {
-    employee: ['/dashboard', '/jobs', '/applications', '/saved', '/profile'],
+    employee: ['/jobs', '/profile'],
     hr: ['/hr/dashboard', '/hr/jobs', '/applicants', '/profile'],
     chro: ['/chro/dashboard', '/chro/reports', '/profile'],
     admin: [], // Admin can access all (handled above)
@@ -51,13 +51,20 @@ export function hasRouteAccess(role: UserRole | null, pathname: string): boolean
 }
 
 /**
- * Get the appropriate dashboard redirect for a role
+ * Get the appropriate landing page redirect for a role
  */
 export function getDashboardForRole(role: UserRole | null): string {
-  if (role === 'admin') {
-    return '/admin/dashboard'
+  switch (role) {
+    case 'admin':
+      return '/admin/dashboard'
+    case 'chro':
+      return '/chro/dashboard'
+    case 'hr':
+      return '/hr/dashboard'
+    case 'employee':
+    default:
+      return '/jobs'
   }
-  return '/dashboard'
 }
 
 /**

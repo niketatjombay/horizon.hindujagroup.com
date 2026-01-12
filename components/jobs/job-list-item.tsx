@@ -79,7 +79,7 @@ export function JobListItem({ job, onSaveToggle }: JobListItemProps) {
 
       {/* Right Side: Posted Date + Save */}
       <div className="flex items-center gap-3 shrink-0">
-        <span className="hidden md:flex items-center gap-1 text-xs text-gray-400">
+        <span className="hidden md:flex items-center gap-1 text-xs text-gray-600">
           <Clock className="h-3 w-3" />
           {formatPostedDate(job.postedDate)}
         </span>
@@ -88,12 +88,12 @@ export function JobListItem({ job, onSaveToggle }: JobListItemProps) {
           className={cn(
             'p-2 rounded-lg transition-all',
             'hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1',
-            job.isSaved ? 'text-destructive' : 'text-gray-400 hover:text-gray-600'
+            job.isSaved ? 'text-destructive' : 'text-gray-500 hover:text-gray-700'
           )}
           aria-label={job.isSaved ? 'Remove from saved jobs' : 'Save job'}
         >
           <Heart
-            className="h-4 w-4"
+            className="h-5 w-5"
             fill={job.isSaved ? 'currentColor' : 'none'}
           />
         </button>
