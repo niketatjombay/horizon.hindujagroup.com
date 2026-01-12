@@ -22,7 +22,6 @@ import {
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Breadcrumbs } from '@/components/shared'
 import {
   Select,
   SelectContent,
@@ -120,9 +119,6 @@ export default function CHRODashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumbs */}
-      <Breadcrumbs items={[{ label: 'Dashboard' }]} />
-
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
