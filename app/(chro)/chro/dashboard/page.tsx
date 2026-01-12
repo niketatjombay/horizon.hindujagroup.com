@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Briefcase,
   FileText,
@@ -94,9 +94,23 @@ export default function CHRODashboardPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>('30d')
   const [companyFilter, setCompanyFilter] = useState<string>('all')
   const [functionFilter, setFunctionFilter] = useState<string>('all')
+  const [jobLevelFilter, setJobLevelFilter] = useState<string>('all')
+  const [locationFilter, setLocationFilter] = useState<string>('all')
 
   const stats = MOCK_STATS[timeRange]
   const firstName = user?.firstName || 'there'
+
+  // Filter company data based on selected filters
+  const filteredCompanyData = useMemo(() => {
+    let data = [...MOCK_COMPANY_DATA]
+
+    // Filter by company
+    if (companyFilter !== 'all') {
+      data = data.filter((c) => c.name === companyFilter)
+    }
+
+    return data
+  }, [companyFilter])
 
   const timeRangeLabel = {
     '30d': 'Last 30 Days',
@@ -209,7 +223,7 @@ export default function CHRODashboardPage() {
             <SelectItem value="sales">Sales</SelectItem>
           </SelectContent>
         </Select>
-        <Select defaultValue="all">
+        <Select value={jobLevelFilter} onValueChange={setJobLevelFilter}>
           <SelectTrigger className="w-[130px] h-9 bg-white">
             <SelectValue placeholder="Job Level" />
           </SelectTrigger>
@@ -219,7 +233,7 @@ export default function CHRODashboardPage() {
             <SelectItem value="promotion">Promotion</SelectItem>
           </SelectContent>
         </Select>
-        <Select defaultValue="all">
+        <Select value={locationFilter} onValueChange={setLocationFilter}>
           <SelectTrigger className="w-[140px] h-9 bg-white">
             <SelectValue placeholder="Location" />
           </SelectTrigger>
@@ -256,34 +270,42 @@ export default function CHRODashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {MOCK_COMPANY_DATA.map((company) => {
-                const conversion = company.applications > 0
-                  ? ((company.hires / company.applications) * 100).toFixed(1)
-                  : '0.0'
-                const workforceApplied = ((company.applications / company.workforce) * 100).toFixed(2)
+              {filteredCompanyData.length > 0 ? (
+                filteredCompanyData.map((company) => {
+                  const conversion = company.applications > 0
+                    ? ((company.hires / company.applications) * 100).toFixed(1)
+                    : '0.0'
+                  const workforceApplied = ((company.applications / company.workforce) * 100).toFixed(2)
 
-                return (
-                  <tr key={company.name} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 pr-4 font-medium text-gray-900 whitespace-nowrap">{company.name}</td>
-                    <td className="py-3 px-4 text-right text-gray-700">{company.jobsPosted}</td>
-                    <td className="py-3 px-4 text-right text-gray-700">{company.applications}</td>
-                    <td className="py-3 px-4 text-right text-gray-700">{company.hires}</td>
-                    <td className="py-3 px-4 text-right">
-                      <span className={cn(
-                        'font-medium',
-                        parseFloat(conversion) >= 10 ? 'text-success' :
-                        parseFloat(conversion) >= 5 ? 'text-gray-700' : 'text-warning'
-                      )}>
-                        {conversion}%
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right text-gray-700">{workforceApplied}%</td>
-                    <td className="py-3 pl-4">
-                      <CompanyStatusBadge flag={company.flag} />
-                    </td>
-                  </tr>
-                )
-              })}
+                  return (
+                    <tr key={company.name} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-3 pr-4 font-medium text-gray-900 whitespace-nowrap">{company.name}</td>
+                      <td className="py-3 px-4 text-right text-gray-700">{company.jobsPosted}</td>
+                      <td className="py-3 px-4 text-right text-gray-700">{company.applications}</td>
+                      <td className="py-3 px-4 text-right text-gray-700">{company.hires}</td>
+                      <td className="py-3 px-4 text-right">
+                        <span className={cn(
+                          'font-medium',
+                          parseFloat(conversion) >= 10 ? 'text-success' :
+                          parseFloat(conversion) >= 5 ? 'text-gray-700' : 'text-warning'
+                        )}>
+                          {conversion}%
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-right text-gray-700">{workforceApplied}%</td>
+                      <td className="py-3 pl-4">
+                        <CompanyStatusBadge flag={company.flag} />
+                      </td>
+                    </tr>
+                  )
+                })
+              ) : (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-gray-500">
+                    No companies match the selected filters
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
