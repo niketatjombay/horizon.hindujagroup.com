@@ -50,7 +50,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
       <JobDetailHeader job={job} onApplyClick={handleApplyClick} />
 
       {/* Main Content Area */}
-      <div className="space-y-6 max-w-4xl">
+      <div className="space-y-6">
           {/* Description Section */}
           <Card className="p-6">
             <h2 className="mb-4 border-b border-gray-200 pb-3 text-h3 font-semibold text-gray-900">
@@ -215,7 +215,7 @@ function JobDetailSkeleton() {
       </div>
 
       {/* Content skeleton */}
-      <div className="max-w-4xl space-y-6">
+      <div className="space-y-6">
         <CardSkeleton />
         <CardSkeleton />
         <CardSkeleton />

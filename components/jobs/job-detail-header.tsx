@@ -68,17 +68,19 @@ export function JobDetailHeader({ job, onApplyClick }: JobDetailHeaderProps) {
       : null
 
   return (
-    <div className="rounded-xl border border-gray-300 bg-white p-6 md:p-8">
-      {/* Back Button */}
+    <div className="space-y-4">
+      {/* Back Button - Outside Card */}
       <button
         onClick={() => router.back()}
-        className="mb-6 flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-primary"
+        className="flex items-center gap-2 text-base font-medium text-gray-600 transition-colors hover:text-primary"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-6 w-6" />
         Back to Jobs
       </button>
 
-      {/* Header Content */}
+      {/* Card */}
+      <div className="rounded-xl border border-gray-300 bg-white p-6 md:p-8">
+        {/* Header Content */}
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         {/* Left: Company Logo + Info */}
         <div className="flex gap-5">
@@ -144,6 +146,7 @@ export function JobDetailHeader({ job, onApplyClick }: JobDetailHeaderProps) {
             <Share2 className="h-5 w-5" />
           </Button>
         </div>
+      </div>
       </div>
     </div>
   )
