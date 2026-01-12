@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useAuth } from '@/lib/hooks'
 import { cn } from '@/lib/utils'
 
 type TimeRange = '30d' | '90d' | '180d'
@@ -88,11 +89,13 @@ const MOCK_INSIGHTS = [
 ]
 
 export default function CHRODashboardPage() {
+  const { user } = useAuth()
   const [timeRange, setTimeRange] = useState<TimeRange>('30d')
   const [companyFilter, setCompanyFilter] = useState<string>('all')
   const [functionFilter, setFunctionFilter] = useState<string>('all')
 
   const stats = MOCK_STATS[timeRange]
+  const firstName = user?.firstName || 'there'
 
   const timeRangeLabel = {
     '30d': 'Last 30 Days',
@@ -101,78 +104,73 @@ export default function CHRODashboardPage() {
   }[timeRange]
 
   return (
-    <div className="space-y-8">
-      {/* Hero Strip */}
-      <div className="rounded-xl bg-gray-900 p-6 md:p-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white md:text-3xl">
-              Internal Mobility Dashboard
-            </h1>
-            <p className="mt-1 text-gray-400">
-              Strategic workforce insights across 17 Hinduja Group companies
-            </p>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
+            Welcome, {firstName}!
+          </h1>
+          <p className="mt-1 text-gray-600">
+            Internal mobility insights across Hinduja Group companies
+          </p>
+        </div>
 
-          {/* Time Range Toggle */}
-          <div className="flex items-center gap-1 rounded-lg bg-gray-800 p-1">
-            {(['30d', '90d', '180d'] as TimeRange[]).map((range) => (
-              <button
-                key={range}
-                onClick={() => setTimeRange(range)}
-                className={cn(
-                  'px-4 py-2 text-sm font-medium rounded-md transition-colors',
-                  timeRange === range
-                    ? 'bg-primary text-white'
-                    : 'text-gray-400 hover:text-white'
-                )}
-              >
-                {range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : '180 Days'}
-              </button>
-            ))}
-          </div>
+        {/* Time Range Toggle */}
+        <div className="flex items-center gap-1 rounded-lg bg-gray-100 p-1">
+          {(['30d', '90d', '180d'] as TimeRange[]).map((range) => (
+            <button
+              key={range}
+              onClick={() => setTimeRange(range)}
+              className={cn(
+                'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                timeRange === range
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              {range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : '180 Days'}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Key Stats Grid */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard
-          icon={<Briefcase className="h-5 w-5" />}
-          label="Total Job Postings"
+          icon={<Briefcase className="h-4 w-4" />}
+          label="Job Postings"
           value={stats.totalJobPostings}
-          sublabel="Across 17 companies"
           color="primary"
         />
         <StatCard
-          icon={<FileText className="h-5 w-5" />}
-          label="Total Applications"
+          icon={<FileText className="h-4 w-4" />}
+          label="Applications"
           value={stats.totalApplications}
           color="secondary"
         />
         <StatCard
-          icon={<Users className="h-5 w-5" />}
+          icon={<Users className="h-4 w-4" />}
           label="Unique Applicants"
           value={stats.uniqueApplicants}
           color="info"
         />
         <StatCard
-          icon={<CheckCircle className="h-5 w-5" />}
+          icon={<CheckCircle className="h-4 w-4" />}
           label="Internal Hires"
           value={stats.internalHires}
           color="success"
         />
         <StatCard
-          icon={<TrendingUp className="h-5 w-5" />}
-          label="Internal Hire Rate"
+          icon={<TrendingUp className="h-4 w-4" />}
+          label="Hire Rate"
           value={`${stats.hireRate}%`}
-          sublabel="Hires / Applications"
           color="warning"
         />
         <StatCard
-          icon={<Clock className="h-5 w-5" />}
+          icon={<Clock className="h-4 w-4" />}
           label="Avg Time to Hire"
           value={`${stats.avgTimeToHire}d`}
-          sublabel="Days average"
           color="gray"
         />
       </div>
@@ -233,14 +231,11 @@ export default function CHRODashboardPage() {
 
       {/* Company-wise Mobility Table */}
       <Card className="p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-gray-600" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              Company-wise Mobility View
-            </h2>
-          </div>
-          <span className="text-sm text-gray-500">{timeRangeLabel}</span>
+        <div className="mb-4 flex items-center gap-2">
+          <Building2 className="h-5 w-5 text-gray-600" />
+          <h2 className="text-lg font-semibold text-gray-900">
+            Company-wise Mobility View
+          </h2>
         </div>
 
         <div className="overflow-x-auto">
@@ -377,15 +372,16 @@ function StatCard({
   }
 
   return (
-    <Card className="p-4">
-      <div className={cn('mb-3 inline-flex rounded-lg p-2', colorStyles[color])}>
-        {icon}
+    <Card className="px-4 py-3">
+      <div className="flex items-center gap-3">
+        <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', colorStyles[color])}>
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className="text-xl font-bold text-gray-900">{value}</p>
+          <p className="text-xs font-medium text-gray-500 truncate">{label}</p>
+        </div>
       </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      <p className="text-sm font-medium text-gray-600">{label}</p>
-      {sublabel && (
-        <p className="mt-1 text-xs text-gray-400">{sublabel}</p>
-      )}
     </Card>
   )
 }
