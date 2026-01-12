@@ -2,6 +2,7 @@
 export { DateRangePicker } from './date-range-picker'
 export { MultiSelectFilter } from './multi-select-filter'
 export { ReportFiltersPanel as ReportFilters } from './report-filters'
+export { ReportFiltersSidebar } from './report-filters-sidebar'
 
 // Report Shell Components
 export { ReportTypeSelector } from './report-type-selector'

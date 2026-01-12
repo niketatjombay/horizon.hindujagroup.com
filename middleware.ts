@@ -23,9 +23,9 @@ function hasRouteAccess(role: UserRole | null, pathname: string): boolean {
 
   // Define allowed routes per role
   const routePermissions: Record<Exclude<UserRole, 'admin'>, string[]> = {
-    employee: ['/dashboard', '/jobs', '/applications', '/saved', '/profile', '/settings'],
-    hr: ['/hr/dashboard', '/hr/jobs', '/hr/applicants', '/profile', '/settings'],
-    chro: ['/chro/dashboard', '/chro/reports', '/profile', '/settings'],
+    employee: ['/dashboard', '/jobs', '/applications', '/saved', '/profile'],
+    hr: ['/hr/dashboard', '/hr/jobs', '/hr/applicants', '/profile'],
+    chro: ['/chro/dashboard', '/chro/reports', '/profile'],
   }
 
   const allowedRoutes = routePermissions[role as keyof typeof routePermissions]

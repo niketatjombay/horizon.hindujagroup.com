@@ -5,7 +5,7 @@ import { FileText } from 'lucide-react'
 import type { Metadata } from 'next'
 import {
   ReportTypeSelector,
-  ReportFilters,
+  ReportFiltersSidebar,
   ReportExportMenu,
   DrillDownModal,
   HiringOverview,
@@ -175,88 +175,94 @@ export default function ReportsPage() {
   const currentReportInfo = REPORT_TYPES.find((r) => r.value === reportType)
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
-            Reports
-          </h1>
-          <p className="mt-1 text-gray-600">
-            Generate detailed analytics and insights for strategic planning
-          </p>
-        </div>
-        <ReportExportMenu
-          reportType={reportType}
-          onExport={handleExport}
-          onPrint={handlePrint}
-          disabled={currentReport.isLoading || !currentReport.data}
-        />
-      </div>
-
-      {/* Report Type Selector */}
-      <ReportTypeSelector
-        selectedType={reportType}
-        onChange={setReportType}
-      />
-
-      {/* Filters */}
-      <ReportFilters
+    <div className="-mx-5 -my-8 md:-mx-8 flex min-h-[calc(100vh-64px)]">
+      {/* Sidebar Filters */}
+      <ReportFiltersSidebar
         filters={filters}
         onChange={setFilters}
+        className="hidden lg:block"
       />
 
-      {/* Current Report Info */}
-      {currentReportInfo && (
-        <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
-          <FileText className="h-4 w-4" />
-          <span>
-            Viewing: <strong>{currentReportInfo.label}</strong> — {currentReportInfo.description}
-          </span>
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-5 md:p-8 space-y-6">
+          {/* Header */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
+                Reports
+              </h1>
+              <p className="mt-1 text-gray-600">
+                Generate detailed analytics and insights for strategic planning
+              </p>
+            </div>
+            <ReportExportMenu
+              reportType={reportType}
+              onExport={handleExport}
+              onPrint={handlePrint}
+              disabled={currentReport.isLoading || !currentReport.data}
+            />
+          </div>
+
+          {/* Report Type Selector */}
+          <ReportTypeSelector
+            selectedType={reportType}
+            onChange={setReportType}
+          />
+
+          {/* Current Report Info */}
+          {currentReportInfo && (
+            <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
+              <FileText className="h-4 w-4" />
+              <span>
+                Viewing: <strong>{currentReportInfo.label}</strong> — {currentReportInfo.description}
+              </span>
+            </div>
+          )}
+
+          {/* Report Content */}
+          <div className="print:pt-4">
+            {reportType === 'hiring-overview' && (
+              <HiringOverview
+                data={hiringOverview.data}
+                isLoading={hiringOverview.isLoading}
+                onDrillDown={handleDrillDown}
+              />
+            )}
+
+            {reportType === 'company-comparison' && (
+              <CompanyComparison
+                data={companyComparison.data}
+                isLoading={companyComparison.isLoading}
+                onDrillDown={handleDrillDown}
+              />
+            )}
+
+            {reportType === 'department-analysis' && (
+              <DepartmentAnalysis
+                data={departmentAnalysis.data}
+                isLoading={departmentAnalysis.isLoading}
+                onDrillDown={handleDrillDown}
+              />
+            )}
+
+            {reportType === 'time-to-hire' && (
+              <TimeToHire
+                data={timeToHire.data}
+                isLoading={timeToHire.isLoading}
+                onDrillDown={handleDrillDown}
+              />
+            )}
+
+            {reportType === 'pipeline-analysis' && (
+              <PipelineAnalysis
+                data={pipelineAnalysis.data}
+                isLoading={pipelineAnalysis.isLoading}
+                onDrillDown={handleDrillDown}
+              />
+            )}
+          </div>
         </div>
-      )}
-
-      {/* Report Content */}
-      <div className="print:pt-4">
-        {reportType === 'hiring-overview' && (
-          <HiringOverview
-            data={hiringOverview.data}
-            isLoading={hiringOverview.isLoading}
-            onDrillDown={handleDrillDown}
-          />
-        )}
-
-        {reportType === 'company-comparison' && (
-          <CompanyComparison
-            data={companyComparison.data}
-            isLoading={companyComparison.isLoading}
-            onDrillDown={handleDrillDown}
-          />
-        )}
-
-        {reportType === 'department-analysis' && (
-          <DepartmentAnalysis
-            data={departmentAnalysis.data}
-            isLoading={departmentAnalysis.isLoading}
-            onDrillDown={handleDrillDown}
-          />
-        )}
-
-        {reportType === 'time-to-hire' && (
-          <TimeToHire
-            data={timeToHire.data}
-            isLoading={timeToHire.isLoading}
-            onDrillDown={handleDrillDown}
-          />
-        )}
-
-        {reportType === 'pipeline-analysis' && (
-          <PipelineAnalysis
-            data={pipelineAnalysis.data}
-            isLoading={pipelineAnalysis.isLoading}
-            onDrillDown={handleDrillDown}
-          />
-        )}
       </div>
 
       {/* Drill-Down Modal */}

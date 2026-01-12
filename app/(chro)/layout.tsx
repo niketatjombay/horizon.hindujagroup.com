@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 }
 
 const CHRO_NAV_LINKS = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/reports', label: 'Reports' },
+  { href: '/chro/dashboard', label: 'Dashboard' },
+  { href: '/chro/reports', label: 'Reports' },
 ]
 
 export default function CHROLayout({

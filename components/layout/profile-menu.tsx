@@ -1,6 +1,6 @@
 'use client'
 
-import { LogOut, User, Settings } from 'lucide-react'
+import { LogOut, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/hooks'
 import {
@@ -70,14 +70,6 @@ export function ProfileMenu() {
           >
             <User className="mr-3 h-5 w-5" />
             <span>My Profile</span>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem
-            onClick={() => router.push('/settings')}
-            className="px-4 py-3 cursor-pointer"
-          >
-            <Settings className="mr-3 h-5 w-5" />
-            <span>Settings</span>
           </DropdownMenuItem>
         </div>
 

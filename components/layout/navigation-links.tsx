@@ -13,12 +13,19 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { href: '/dashboard', label: 'Dashboard', roles: ['employee', 'hr', 'chro', 'admin'] },
+  // Employee routes
+  { href: '/dashboard', label: 'Dashboard', roles: ['employee'] },
   { href: '/jobs', label: 'Jobs', roles: ['employee', 'hr'] },
   { href: '/applications', label: 'Applications', roles: ['employee'] },
   { href: '/saved', label: 'Saved', roles: ['employee'] },
+  // HR routes
+  { href: '/hr/dashboard', label: 'Dashboard', roles: ['hr'] },
   { href: '/applicants', label: 'Applicants', roles: ['hr'] },
-  { href: '/reports', label: 'Reports', roles: ['chro'] },
+  // CHRO routes
+  { href: '/chro/dashboard', label: 'Dashboard', roles: ['chro'] },
+  { href: '/chro/reports', label: 'Reports', roles: ['chro'] },
+  // Admin routes
+  { href: '/admin/dashboard', label: 'Dashboard', roles: ['admin'] },
   { href: '/admin/companies', label: 'Companies', roles: ['admin'] },
   { href: '/admin/users', label: 'Users', roles: ['admin'] },
   { href: '/admin/sync', label: 'Sync', roles: ['admin'] },
