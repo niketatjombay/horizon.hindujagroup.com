@@ -84,7 +84,7 @@ export default function HRDashboardPage() {
   const firstName = user?.firstName || 'there'
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">

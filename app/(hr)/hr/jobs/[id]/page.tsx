@@ -11,8 +11,6 @@ import {
   MapPin,
   IndianRupee,
   Building2,
-  ArrowLeft,
-  Edit,
   Eye,
   UserPlus,
 } from 'lucide-react'
@@ -21,6 +19,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CardSkeleton } from '@/components/shared/loading-skeleton'
 import { ErrorState } from '@/components/shared/error-state'
+import { Breadcrumbs } from '@/components/shared'
 import { useJob } from '@/lib/hooks/use-jobs'
 import { getApplicationsByJob } from '@/mock/data/applications'
 import { formatPostedDate } from '@/lib/utils/format-date'
@@ -65,16 +64,14 @@ export default function HRJobDetailPage({ params }: HRJobDetailPageProps) {
 
   return (
     <div className="space-y-8">
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => router.back()}
-        className="gap-2 text-gray-600 hover:text-gray-900"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Jobs
-      </Button>
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        items={[
+          { label: 'Dashboard', href: '/hr/dashboard' },
+          { label: 'Jobs', href: '/hr/jobs' },
+          { label: job.title },
+        ]}
+      />
 
       {/* Header Card */}
       <Card className="p-6 md:p-8">
@@ -116,10 +113,6 @@ export default function HRJobDetailPage({ params }: HRJobDetailPageProps) {
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3">
-            <Button variant="secondary" className="gap-2">
-              <Edit className="h-4 w-4" />
-              Edit Job
-            </Button>
             <Button
               onClick={() => router.push(`/hr/applicants?jobId=${job.id}`)}
               className="gap-2"

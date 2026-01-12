@@ -7,7 +7,6 @@ import { format } from 'date-fns'
 import {
   ChevronLeft,
   ChevronRight,
-  ArrowLeft,
   Briefcase,
   Building2,
   Calendar,
@@ -16,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { LoadingSkeleton, ErrorState } from '@/components/shared'
+import { LoadingSkeleton, ErrorState, Breadcrumbs } from '@/components/shared'
 import {
   ApplicantProfileHeader,
   ResumeViewer,
@@ -147,15 +146,13 @@ export default function ApplicantDetailPage() {
       {/* Breadcrumb & Navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm">
-          <Link
-            href="/hr/applicants"
-            className="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Applicants
-          </Link>
-        </nav>
+        <Breadcrumbs
+          items={[
+            { label: 'Dashboard', href: '/hr/dashboard' },
+            { label: 'Applicants', href: '/hr/applicants' },
+            { label: applicant.userName },
+          ]}
+        />
 
         {/* Previous/Next Navigation */}
         <div className="flex items-center gap-2">

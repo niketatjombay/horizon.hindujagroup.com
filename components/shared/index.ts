@@ -32,3 +32,4 @@ export {
 } from './success-modal'
 export { DataTable, type ColumnDef, type DataTableProps, type SortDirection } from './data-table'
 export { DataTablePagination } from './data-table-pagination'
+export { Breadcrumbs, type BreadcrumbItem } from './breadcrumbs'

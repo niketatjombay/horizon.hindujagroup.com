@@ -14,6 +14,7 @@ import {
   TimeToHire,
   PipelineAnalysis,
 } from '@/components/chro/reports'
+import { Breadcrumbs } from '@/components/shared'
 import type {
   ReportType,
   ReportFilters as ReportFiltersType,
@@ -186,6 +187,14 @@ export default function ReportsPage() {
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-5 md:p-8 space-y-6">
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { label: 'Dashboard', href: '/chro/dashboard' },
+              { label: 'Reports' },
+            ]}
+          />
+
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>

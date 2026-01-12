@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { DataTable, DataTablePagination } from '@/components/shared'
+import { DataTable, DataTablePagination, Breadcrumbs } from '@/components/shared'
 import { LoadingSkeleton } from '@/components/shared/loading-skeleton'
 import { EmptyState } from '@/components/shared/empty-state'
 import { useJobs } from '@/lib/hooks/use-jobs'
@@ -117,9 +117,9 @@ export default function HRJobsPage() {
     return jobsData.data
   }, [jobsData?.data, sortBy])
 
-  // Handle row click
+  // Handle row click - go to job detail page
   const handleRowClick = useCallback((job: Job) => {
-    router.push(`/hr/applicants?jobId=${job.id}`)
+    router.push(`/hr/jobs/${job.id}`)
   }, [router])
 
   // Handle job status toggle
@@ -305,6 +305,14 @@ export default function HRJobsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        items={[
+          { label: 'Dashboard', href: '/hr/dashboard' },
+          { label: 'Jobs' },
+        ]}
+      />
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">

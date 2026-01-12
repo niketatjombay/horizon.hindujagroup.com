@@ -11,11 +11,18 @@ import {
   FileText,
   ExternalLink,
   X,
+  Download,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import {
   Select,
   SelectContent,
@@ -23,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { DataTable, DataTablePagination } from '@/components/shared'
+import { DataTable, DataTablePagination, Breadcrumbs } from '@/components/shared'
 import {
   StatusChangeDropdown,
   BulkActionsBar,
@@ -66,6 +73,10 @@ function HRApplicantsPageContent() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
   const [selectedRows, setSelectedRows] = useState<string[]>([])
+
+  // Resume drawer state
+  const [resumeDrawerOpen, setResumeDrawerOpen] = useState(false)
+  const [selectedResume, setSelectedResume] = useState<{ url: string; name: string } | null>(null)
 
   // Debounced search
   const debouncedSearch = useDebounce(search, 300)
@@ -143,6 +154,17 @@ function HRApplicantsPageContent() {
     return job?.title
   }, [jobFilter, jobsData?.data])
 
+  // Handle row click - navigate to applicant detail
+  const handleRowClick = useCallback((app: Application) => {
+    router.push(`/hr/applicants/${app.id}`)
+  }, [router])
+
+  // Handle resume view
+  const handleViewResume = useCallback((url: string, name: string) => {
+    setSelectedResume({ url, name })
+    setResumeDrawerOpen(true)
+  }, [])
+
   // Table columns
   const columns: ColumnDef<Application>[] = useMemo(
     () => [
@@ -217,7 +239,7 @@ function HRApplicantsPageContent() {
               className="h-8 gap-1"
               onClick={(e) => {
                 e.stopPropagation()
-                window.open(row.resumeUrl, '_blank')
+                handleViewResume(row.resumeUrl!, row.userName)
               }}
             >
               <FileText className="h-4 w-4" />
@@ -228,7 +250,7 @@ function HRApplicantsPageContent() {
         hideOnMobile: true,
       },
     ],
-    [handleStatusChange, updateStatus.isPending]
+    [handleStatusChange, updateStatus.isPending, handleViewResume]
   )
 
   // Mobile card renderer
@@ -274,21 +296,40 @@ function HRApplicantsPageContent() {
               variant="secondary"
               size="sm"
               className="w-full gap-2"
-              onClick={() => window.open(app.resumeUrl, '_blank')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleViewResume(app.resumeUrl!, app.userName)
+              }}
             >
               <FileText className="h-4 w-4" />
               View Resume
-              <ExternalLink className="h-3 w-3" />
             </Button>
           )}
         </Card>
       )
     },
-    [handleStatusChange, updateStatus.isPending]
+    [handleStatusChange, updateStatus.isPending, handleViewResume]
   )
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        items={
+          selectedJobTitle
+            ? [
+                { label: 'Dashboard', href: '/hr/dashboard' },
+                { label: 'Jobs', href: '/hr/jobs' },
+                { label: selectedJobTitle, href: `/hr/jobs/${jobFilter}` },
+                { label: 'Applicants' },
+              ]
+            : [
+                { label: 'Dashboard', href: '/hr/dashboard' },
+                { label: 'Applicants' },
+              ]
+        }
+      />
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
@@ -430,6 +471,7 @@ function HRApplicantsPageContent() {
         selectable
         selectedRows={selectedRows}
         onSelectionChange={setSelectedRows}
+        onRowClick={handleRowClick}
         mobileCardRenderer={mobileCardRenderer}
         emptyState={{
           title: 'No applicants found',
@@ -454,6 +496,37 @@ function HRApplicantsPageContent() {
           }}
         />
       )}
+
+      {/* Resume Drawer */}
+      <Sheet open={resumeDrawerOpen} onOpenChange={setResumeDrawerOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl">
+          <SheetHeader className="border-b pb-4">
+            <SheetTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              {selectedResume?.name}&apos;s Resume
+            </SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-hidden">
+            {selectedResume?.url && (
+              <iframe
+                src={selectedResume.url}
+                className="h-full w-full border-0"
+                title="Resume Preview"
+              />
+            )}
+          </div>
+          <div className="border-t p-4">
+            <Button
+              variant="secondary"
+              className="w-full gap-2"
+              onClick={() => selectedResume?.url && window.open(selectedResume.url, '_blank')}
+            >
+              <Download className="h-4 w-4" />
+              Download Resume
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }
