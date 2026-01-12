@@ -193,17 +193,17 @@ function JobsPageContent() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 px-6 py-4">
+      <div className="rounded-xl bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/15 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15">
             <Sparkles className="h-5 w-5 text-primary" />
           </div>
           <div>
             <h1 className="text-lg font-semibold text-gray-900">
-              Welcome back, {firstName}!
+              Welcome, {firstName}!
             </h1>
             <p className="text-sm text-gray-600">
-              Explore opportunities across 17 Hinduja Group companies
+              Explore opportunities across Hinduja Group companies
             </p>
           </div>
         </div>
