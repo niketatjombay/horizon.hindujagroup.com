@@ -17,6 +17,11 @@ interface RoleOption {
   redirectTo: string
   username: string
   password: string
+  color: {
+    bg: string
+    bgActive: string
+    text: string
+  }
 }
 
 const ROLE_OPTIONS: RoleOption[] = [
@@ -28,6 +33,11 @@ const ROLE_OPTIONS: RoleOption[] = [
     redirectTo: '/dashboard',
     username: 'employee@hinduja.com',
     password: 'employee123',
+    color: {
+      bg: 'bg-primary-light',
+      bgActive: 'bg-primary',
+      text: 'text-primary',
+    },
   },
   {
     role: 'hr',
@@ -37,6 +47,11 @@ const ROLE_OPTIONS: RoleOption[] = [
     redirectTo: '/hr/dashboard',
     username: 'hr@hinduja.com',
     password: 'hr123',
+    color: {
+      bg: 'bg-secondary-light',
+      bgActive: 'bg-secondary',
+      text: 'text-secondary',
+    },
   },
   {
     role: 'chro',
@@ -46,6 +61,11 @@ const ROLE_OPTIONS: RoleOption[] = [
     redirectTo: '/chro/dashboard',
     username: 'chro@hinduja.com',
     password: 'chro123',
+    color: {
+      bg: 'bg-success-light',
+      bgActive: 'bg-success',
+      text: 'text-success',
+    },
   },
   {
     role: 'admin',
@@ -55,6 +75,11 @@ const ROLE_OPTIONS: RoleOption[] = [
     redirectTo: '/admin/dashboard',
     username: 'admin@hinduja.com',
     password: 'admin123',
+    color: {
+      bg: 'bg-warning-light',
+      bgActive: 'bg-warning',
+      text: 'text-warning',
+    },
   },
 ]
 
@@ -150,8 +175,8 @@ function LoginPageContent() {
                       className={cn(
                         'flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors',
                         isExpanded
-                          ? 'bg-primary text-white'
-                          : 'bg-gray-100 text-gray-600'
+                          ? `${option.color.bgActive} text-white`
+                          : `${option.color.bg} ${option.color.text}`
                       )}
                     >
                       {option.icon}
