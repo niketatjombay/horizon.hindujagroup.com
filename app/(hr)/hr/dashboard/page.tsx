@@ -1,8 +1,9 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { FileText, Clock, Briefcase } from 'lucide-react'
+import { FileText, Clock, Briefcase, ArrowRight } from 'lucide-react'
 import {
   MetricCard,
   RecentApplicationsTable,
@@ -152,6 +153,13 @@ export default function HRDashboardPage() {
             applications={filteredApplications}
             isLoading={isLoadingApplications}
           />
+          <Link
+            href="/hr/applicants"
+            className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-primary hover:underline"
+          >
+            View all applicants
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
         {/* Top Jobs Sidebar */}
@@ -160,6 +168,13 @@ export default function HRDashboardPage() {
             Top Jobs
           </h2>
           <TopJobsList jobs={topJobs} isLoading={isLoadingJobs} />
+          <Link
+            href="/hr/jobs"
+            className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-primary hover:underline"
+          >
+            View all jobs
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     </div>

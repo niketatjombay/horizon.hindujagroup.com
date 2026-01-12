@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
-import { ChevronRight } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import type { Application, ApplicationStatus } from '@/types'
@@ -66,9 +65,6 @@ export function RecentApplicationsTable({
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                   Status
                 </th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">
-                  Actions
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -94,9 +90,6 @@ export function RecentApplicationsTable({
                   </td>
                   <td className="px-6 py-4">
                     <div className="h-6 w-20 animate-pulse rounded bg-gray-200" />
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="h-6 w-6 animate-pulse rounded bg-gray-200" />
                   </td>
                 </tr>
               ))}
@@ -132,9 +125,6 @@ export function RecentApplicationsTable({
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                 Status
-              </th>
-              <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">
-                Actions
               </th>
             </tr>
           </thead>
@@ -187,9 +177,6 @@ export function RecentApplicationsTable({
                     <Badge variant={STATUS_VARIANTS[application.status]} size="sm">
                       {STATUS_LABELS[application.status]}
                     </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <ChevronRight className="inline-block h-5 w-5 text-gray-400" />
                   </td>
                 </tr>
               )
