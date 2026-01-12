@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { X, FileText, Bookmark, Sparkles } from 'lucide-react'
+import { X, Sparkles } from 'lucide-react'
 import { useAuth } from '@/lib/hooks'
 import { SearchBar } from '@/components/shared/search-bar'
 import { Pagination } from '@/components/shared/pagination'
@@ -230,12 +230,12 @@ function JobsPageContent() {
           </div>
 
           {/* Tabs */}
-          <div className="mb-4 flex items-center justify-between border-b border-gray-200">
+          <div className="mb-4 border-b border-gray-200">
             <nav className="flex gap-6" aria-label="Tabs">
               {[
-                { id: 'jobs', label: 'Jobs' },
-                { id: 'applications', label: 'My Applications' },
-                { id: 'saved', label: 'Saved Jobs' },
+                { id: 'jobs', label: 'Jobs', count: totalJobs },
+                { id: 'applications', label: 'My Applications', count: applicationsCount },
+                { id: 'saved', label: 'Saved Jobs', count: savedCount },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -248,22 +248,20 @@ function JobsPageContent() {
                   )}
                 >
                   {tab.label}
+                  {tab.count > 0 && (
+                    <span className={cn(
+                      'ml-1.5 text-xs',
+                      activeTab === tab.id ? 'text-primary' : 'text-gray-400'
+                    )}>
+                      ({tab.count})
+                    </span>
+                  )}
                   {activeTab === tab.id && (
                     <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
                   )}
                 </button>
               ))}
             </nav>
-            <div className="flex items-center gap-3 text-xs text-gray-500">
-              <span className="flex items-center gap-1">
-                <FileText className="h-3.5 w-3.5" />
-                {applicationsCount} applied
-              </span>
-              <span className="flex items-center gap-1">
-                <Bookmark className="h-3.5 w-3.5" />
-                {savedCount} saved
-              </span>
-            </div>
           </div>
 
           {/* Jobs Tab Content */}
