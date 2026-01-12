@@ -29,13 +29,16 @@ export function ProfileMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-        <Avatar className="h-10 w-10">
+      <DropdownMenuTrigger className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900">
+        <Avatar className="h-9 w-9">
           <AvatarImage src={user.avatarUrl} alt={fullName} />
-          <AvatarFallback className="bg-primary text-white font-semibold">
+          <AvatarFallback className="bg-primary text-white font-semibold text-sm">
             {initials}
           </AvatarFallback>
         </Avatar>
+        <span className="hidden sm:block text-sm font-medium text-white">
+          {fullName}
+        </span>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-72">
