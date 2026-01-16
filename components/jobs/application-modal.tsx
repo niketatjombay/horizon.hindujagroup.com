@@ -35,9 +35,12 @@ const applicationSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   phone: z
     .string()
-    .regex(
-      /^\+?[1-9]\d{1,14}$/,
-      'Please enter a valid phone number (e.g., +919876543210)'
+    .transform((val) => val.replace(/\s+/g, ''))
+    .pipe(
+      z.string().regex(
+        /^\+?[1-9]\d{1,14}$/,
+        'Please enter a valid phone number (e.g., +91 9876543210)'
+      )
     ),
   coverLetter: z
     .string()
