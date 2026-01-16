@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Upload, File, X, FileText, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -39,6 +39,15 @@ export function FileUpload({
 }: FileUploadProps) {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
+
+  // Handle file selection after upload completes
+  useEffect(() => {
+    if (pendingFile && !isUploading && uploadProgress === 100) {
+      onFileSelect(pendingFile)
+      setPendingFile(null)
+    }
+  }, [pendingFile, isUploading, uploadProgress, onFileSelect])
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -48,13 +57,13 @@ export function FileUpload({
         // Simulate upload progress
         setIsUploading(true)
         setUploadProgress(0)
+        setPendingFile(file)
 
         const interval = setInterval(() => {
           setUploadProgress((prev) => {
             if (prev >= 100) {
               clearInterval(interval)
               setIsUploading(false)
-              onFileSelect(file)
               return 100
             }
             return prev + 10
@@ -62,7 +71,7 @@ export function FileUpload({
         }, 100)
       }
     },
-    [onFileSelect]
+    []
   )
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } =
