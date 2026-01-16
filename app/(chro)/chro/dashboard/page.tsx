@@ -7,7 +7,6 @@ import {
   Users,
   CheckCircle,
   TrendingUp,
-  Clock,
   Building2,
   Filter,
   Lightbulb,
@@ -42,7 +41,6 @@ const MOCK_STATS = {
     uniqueApplicants: 189,
     internalHires: 23,
     hireRate: 7.4,
-    avgTimeToHire: 18,
   },
   '90d': {
     totalJobPostings: 124,
@@ -50,7 +48,6 @@ const MOCK_STATS = {
     uniqueApplicants: 456,
     internalHires: 67,
     hireRate: 7.5,
-    avgTimeToHire: 21,
   },
   '180d': {
     totalJobPostings: 231,
@@ -58,7 +55,6 @@ const MOCK_STATS = {
     uniqueApplicants: 823,
     internalHires: 134,
     hireRate: 8.1,
-    avgTimeToHire: 19,
   },
 }
 
@@ -147,7 +143,7 @@ export default function CHRODashboardPage() {
       </div>
 
       {/* Key Stats Grid */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <StatCard
           icon={<Briefcase className="h-4 w-4" />}
           label="Job Postings"
@@ -177,12 +173,6 @@ export default function CHRODashboardPage() {
           label="Hire Rate"
           value={`${stats.hireRate}%`}
           color="warning"
-        />
-        <StatCard
-          icon={<Clock className="h-4 w-4" />}
-          label="Avg Time to Hire"
-          value={`${stats.avgTimeToHire}d`}
-          color="gray"
         />
       </div>
 
