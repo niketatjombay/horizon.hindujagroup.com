@@ -1,7 +1,13 @@
-import { faker } from '@faker-js/faker'
-import { subDays } from 'date-fns'
-import { MOCK_USERS } from '../data/users'
-import { MOCK_COMPANIES } from '../data/companies'
+import {
+  getUsers,
+  setUsers,
+  getUserById as getUserFromStore,
+  createUser as createUserInStore,
+  updateUser as updateUserInStore,
+  deleteUser as deleteUserFromStore,
+  getCompanies,
+  generateId,
+} from '@/lib/stores/data-store'
 import type { User, UserRole } from '@/types'
 
 // =============================================================================
@@ -58,25 +64,28 @@ export const USER_ROLES: { value: UserRole; label: string }[] = [
 ]
 
 // =============================================================================
-// In-Memory State
-// =============================================================================
-
-// Clone the users data to allow modifications
-let usersState: User[] = [...MOCK_USERS]
-
-// =============================================================================
 // Helper Functions
 // =============================================================================
 
+// Color palette for avatars
+const AVATAR_COLORS = ['0066FF', '7B61FF', '00B87C', 'FFA733']
+
 function generateAvatarUrl(firstName: string, lastName: string): string {
   const name = encodeURIComponent(`${firstName} ${lastName}`)
-  const bgColor = faker.helpers.arrayElement(['0066FF', '7B61FF', '00B87C', 'FFA733'])
+  // Use a hash of the name to get consistent color
+  let hash = 0
+  const fullName = `${firstName}${lastName}`
+  for (let i = 0; i < fullName.length; i++) {
+    hash = fullName.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const colorIndex = Math.abs(hash) % AVATAR_COLORS.length
+  const bgColor = AVATAR_COLORS[colorIndex]
   return `https://ui-avatars.com/api/?name=${name}&size=96&background=${bgColor}&color=fff`
 }
 
 function getCompanyName(companyId: string | undefined): string {
   if (!companyId) return 'N/A'
-  const company = MOCK_COMPANIES.find((c) => c.id === companyId)
+  const company = getCompanies().find((c) => c.id === companyId)
   return company?.name ?? 'Unknown'
 }
 
@@ -93,7 +102,7 @@ export async function getMockUsersFiltered(
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 300))
 
-  let filtered = [...usersState]
+  let filtered = [...getUsers()]
 
   // Apply search filter
   if (filters?.search) {
@@ -136,7 +145,7 @@ export async function getMockUsersFiltered(
 export async function getMockUserAdmin(userId: string): Promise<UserWithCompany | null> {
   await new Promise((resolve) => setTimeout(resolve, 200))
 
-  const user = usersState.find((u) => u.id === userId)
+  const user = getUserFromStore(userId)
   if (!user) return null
 
   return {
@@ -152,14 +161,16 @@ export async function createMockUserAdmin(data: UserFormData): Promise<UserWithC
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   // Check for duplicate email
-  const existing = usersState.find(
+  const users = getUsers()
+  const existing = users.find(
     (u) => u.email.toLowerCase() === data.email.toLowerCase()
   )
   if (existing) {
     throw new Error('A user with this email already exists')
   }
 
-  const newId = (Math.max(...usersState.map((u) => parseInt(u.id))) + 1).toString()
+  const maxId = Math.max(...users.map((u) => parseInt(u.id) || 0), 0)
+  const newId = (maxId + 1).toString()
   const now = new Date().toISOString()
 
   const newUser: User = {
@@ -181,7 +192,7 @@ export async function createMockUserAdmin(data: UserFormData): Promise<UserWithC
     updatedAt: now,
   }
 
-  usersState.push(newUser)
+  createUserInStore(newUser)
 
   return {
     ...newUser,
@@ -198,32 +209,29 @@ export async function updateMockUserAdmin(
 ): Promise<UserWithCompany | null> {
   await new Promise((resolve) => setTimeout(resolve, 400))
 
-  const index = usersState.findIndex((u) => u.id === userId)
-  if (index === -1) return null
+  const existing = getUserFromStore(userId)
+  if (!existing) return null
 
-  const existing = usersState[index]
+  const updates: Partial<User> = {}
 
-  // Don't allow email changes (email is readonly on edit)
-  const updated: User = {
-    ...existing,
-    firstName: data.firstName ?? existing.firstName,
-    lastName: data.lastName ?? existing.lastName,
-    phone: data.phone ?? existing.phone,
-    role: data.role ?? existing.role,
-    companyId: data.companyId ?? existing.companyId,
-    department: data.department ?? existing.department,
-    status: data.status ?? existing.status,
-    avatarUrl:
-      data.firstName || data.lastName
-        ? generateAvatarUrl(
-            data.firstName ?? existing.firstName,
-            data.lastName ?? existing.lastName
-          )
-        : existing.avatarUrl,
-    updatedAt: new Date().toISOString(),
+  if (data.firstName !== undefined) updates.firstName = data.firstName
+  if (data.lastName !== undefined) updates.lastName = data.lastName
+  if (data.phone !== undefined) updates.phone = data.phone
+  if (data.role !== undefined) updates.role = data.role
+  if (data.companyId !== undefined) updates.companyId = data.companyId
+  if (data.department !== undefined) updates.department = data.department
+  if (data.status !== undefined) updates.status = data.status
+
+  // Update avatar if name changed
+  if (data.firstName || data.lastName) {
+    updates.avatarUrl = generateAvatarUrl(
+      data.firstName ?? existing.firstName,
+      data.lastName ?? existing.lastName
+    )
   }
 
-  usersState[index] = updated
+  const updated = updateUserInStore(userId, updates)
+  if (!updated) return null
 
   return {
     ...updated,
@@ -237,11 +245,8 @@ export async function updateMockUserAdmin(
 export async function deleteMockUserAdmin(userId: string): Promise<{ success: boolean }> {
   await new Promise((resolve) => setTimeout(resolve, 400))
 
-  const index = usersState.findIndex((u) => u.id === userId)
-  if (index === -1) return { success: false }
-
-  usersState.splice(index, 1)
-  return { success: true }
+  const success = deleteUserFromStore(userId)
+  return { success }
 }
 
 /**
@@ -252,7 +257,7 @@ export async function resetMockUserPassword(
 ): Promise<{ success: boolean; message: string }> {
   await new Promise((resolve) => setTimeout(resolve, 600))
 
-  const user = usersState.find((u) => u.id === userId)
+  const user = getUserFromStore(userId)
   if (!user) {
     return { success: false, message: 'User not found' }
   }
@@ -274,15 +279,10 @@ export async function bulkUpdateMockUserRole(
   await new Promise((resolve) => setTimeout(resolve, 600))
 
   let updated = 0
-  const now = new Date().toISOString()
 
   for (const userId of userIds) {
-    const user = usersState.find((u) => u.id === userId)
-    if (user) {
-      user.role = newRole
-      user.updatedAt = now
-      updated++
-    }
+    const result = updateUserInStore(userId, { role: newRole })
+    if (result) updated++
   }
 
   return { success: true, updated }
@@ -298,15 +298,10 @@ export async function bulkUpdateMockUserStatus(
   await new Promise((resolve) => setTimeout(resolve, 600))
 
   let updated = 0
-  const now = new Date().toISOString()
 
   for (const userId of userIds) {
-    const user = usersState.find((u) => u.id === userId)
-    if (user) {
-      user.status = status
-      user.updatedAt = now
-      updated++
-    }
+    const result = updateUserInStore(userId, { status })
+    if (result) updated++
   }
 
   return { success: true, updated }
@@ -320,7 +315,8 @@ export async function bulkResetMockUserPasswords(
 ): Promise<{ success: boolean; sent: number }> {
   await new Promise((resolve) => setTimeout(resolve, 800))
 
-  const validUsers = usersState.filter((u) => userIds.includes(u.id))
+  const users = getUsers()
+  const validUsers = users.filter((u) => userIds.includes(u.id))
   return {
     success: true,
     sent: validUsers.length,
@@ -333,11 +329,12 @@ export async function bulkResetMockUserPasswords(
 export async function getMockUserCountsByRole(): Promise<Record<UserRole, number>> {
   await new Promise((resolve) => setTimeout(resolve, 100))
 
+  const users = getUsers()
   return {
-    employee: usersState.filter((u) => u.role === 'employee').length,
-    hr: usersState.filter((u) => u.role === 'hr').length,
-    chro: usersState.filter((u) => u.role === 'chro').length,
-    admin: usersState.filter((u) => u.role === 'admin').length,
+    employee: users.filter((u) => u.role === 'employee').length,
+    hr: users.filter((u) => u.role === 'hr').length,
+    chro: users.filter((u) => u.role === 'chro').length,
+    admin: users.filter((u) => u.role === 'admin').length,
   }
 }
 
@@ -345,14 +342,14 @@ export async function getMockUserCountsByRole(): Promise<Record<UserRole, number
  * Get companies list for dropdown
  */
 export function getCompaniesForDropdown(): { id: string; name: string }[] {
-  return MOCK_COMPANIES.map((c) => ({ id: c.id, name: c.name })).sort((a, b) =>
+  return getCompanies().map((c) => ({ id: c.id, name: c.name })).sort((a, b) =>
     a.name.localeCompare(b.name)
   )
 }
 
 /**
- * Reset users state (for testing)
+ * Reset users state (now handled by resetDataStore)
  */
 export function resetUsersState(): void {
-  usersState = [...MOCK_USERS]
+  console.log('[Users] Use resetDataStore() to reset all data')
 }

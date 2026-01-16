@@ -1,6 +1,6 @@
 import type { Job, JobType, ExperienceLevel, JobStatus } from '@/types'
 import type { PaginatedResponse, Pagination, JobFilters } from '@/types/api'
-import { MOCK_JOBS } from '../data/jobs'
+import { getJobs, updateJob as updateJobInStore } from '@/lib/stores/data-store'
 import { parseISO, isAfter, isBefore } from 'date-fns'
 
 export interface ExtendedJobFilters extends JobFilters {
@@ -13,7 +13,7 @@ export interface ExtendedJobFilters extends JobFilters {
  * Get mock jobs with comprehensive filtering and pagination
  */
 export function getMockJobs(filters?: ExtendedJobFilters): PaginatedResponse<Job> {
-  let filteredJobs = [...MOCK_JOBS]
+  let filteredJobs = [...getJobs()]
 
   // Apply search filter
   if (filters?.search) {
@@ -155,7 +155,7 @@ export function getMockJobs(filters?: ExtendedJobFilters): PaginatedResponse<Job
  * Get a single job by ID
  */
 export function getMockJobById(id: string): Job | null {
-  return MOCK_JOBS.find(job => job.id === id) || null
+  return getJobs().find(job => job.id === id) || null
 }
 
 /**
@@ -163,7 +163,7 @@ export function getMockJobById(id: string): Job | null {
  */
 export function getMockRecommendedJobs(limit: number = 6): Job[] {
   // Simple recommendation: return jobs with most views from different companies
-  const recommendedJobs = [...MOCK_JOBS]
+  const recommendedJobs = [...getJobs()]
     .sort((a, b) => b.viewsCount - a.viewsCount)
     .slice(0, limit)
 
@@ -174,7 +174,7 @@ export function getMockRecommendedJobs(limit: number = 6): Job[] {
  * Get recently posted jobs
  */
 export function getMockRecentJobs(limit: number = 6): Job[] {
-  return [...MOCK_JOBS]
+  return [...getJobs()]
     .sort((a, b) =>
       new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime()
     )
@@ -185,21 +185,21 @@ export function getMockRecentJobs(limit: number = 6): Job[] {
  * Get jobs by company
  */
 export function getMockJobsByCompany(companyId: string): Job[] {
-  return MOCK_JOBS.filter(job => job.companyId === companyId)
+  return getJobs().filter(job => job.companyId === companyId)
 }
 
 /**
  * Get saved jobs for user (mock - just returns first 5 jobs)
  */
 export function getMockSavedJobs(): Job[] {
-  return MOCK_JOBS.slice(0, 5).map(job => ({ ...job, isSaved: true }))
+  return getJobs().filter(job => job.isSaved)
 }
 
 /**
  * Get unique locations from all jobs
  */
 export function getMockJobLocations(): string[] {
-  const locations = new Set(MOCK_JOBS.map(job => job.location))
+  const locations = new Set(getJobs().map(job => job.location))
   return Array.from(locations).sort()
 }
 
@@ -207,7 +207,7 @@ export function getMockJobLocations(): string[] {
  * Get unique functions from all jobs
  */
 export function getMockJobFunctions(): string[] {
-  const functions = new Set(MOCK_JOBS.map(job => job.function))
+  const functions = new Set(getJobs().map(job => job.function))
   return Array.from(functions).sort()
 }
 
@@ -215,7 +215,7 @@ export function getMockJobFunctions(): string[] {
  * Get job count by status
  */
 export function getMockJobCountByStatus(): Record<JobStatus, number> {
-  return MOCK_JOBS.reduce((acc, job) => {
+  return getJobs().reduce((acc, job) => {
     acc[job.status] = (acc[job.status] || 0) + 1
     return acc
   }, {} as Record<JobStatus, number>)
@@ -225,5 +225,16 @@ export function getMockJobCountByStatus(): Record<JobStatus, number> {
  * Get total job count
  */
 export function getMockJobCount(): number {
-  return MOCK_JOBS.length
+  return getJobs().length
+}
+
+/**
+ * Toggle save status for a job
+ */
+export function toggleMockJobSave(jobId: string): Job | null {
+  const job = getJobs().find(j => j.id === jobId)
+  if (!job) return null
+
+  const updated = updateJobInStore(jobId, { isSaved: !job.isSaved })
+  return updated || null
 }

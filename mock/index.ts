@@ -7,6 +7,15 @@
 // ============================================================================
 
 // =============================================================================
+// Data Store (LocalStorage Persistence)
+// =============================================================================
+export {
+  initializeDataStore,
+  resetDataStore,
+  isDataStoreInitialized,
+} from '@/lib/stores/data-store'
+
+// =============================================================================
 // Mock Data Exports
 // =============================================================================
 
@@ -47,6 +56,7 @@ export {
   getMockJobFunctions,
   getMockJobCountByStatus,
   getMockJobCount,
+  toggleMockJobSave,
   type ExtendedJobFilters,
 } from './services/jobs'
 

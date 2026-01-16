@@ -1,5 +1,5 @@
 import type { Job, ApiResponse, PaginatedResponse, JobFilters } from '@/types'
-import { getMockJobs, getMockJobById, getMockRecommendedJobs, getMockRecentJobs, getMockSavedJobs } from '@/mock'
+import { getMockJobs, getMockJobById, getMockRecommendedJobs, getMockRecentJobs, getMockSavedJobs, toggleMockJobSave } from '@/mock'
 import type { ExtendedJobFilters } from '@/mock'
 
 /**
@@ -59,11 +59,23 @@ export async function fetchSavedJobs(): Promise<Job[]> {
 export async function toggleSaveJob(jobId: string): Promise<ApiResponse<{ saved: boolean }>> {
   await new Promise((resolve) => setTimeout(resolve, 300))
 
-  // Mock implementation - in real app, this would call API
+  const updatedJob = toggleMockJobSave(jobId)
+
+  if (!updatedJob) {
+    return {
+      data: { saved: false },
+      success: false,
+      message: 'Job not found',
+      timestamp: new Date().toISOString(),
+    }
+  }
+
+  const saved = updatedJob.isSaved ?? false
+
   return {
-    data: { saved: true },
+    data: { saved },
     success: true,
-    message: 'Job saved successfully',
+    message: saved ? 'Job saved successfully' : 'Job unsaved successfully',
     timestamp: new Date().toISOString(),
   }
 }

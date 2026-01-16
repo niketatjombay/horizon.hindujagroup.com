@@ -1,7 +1,15 @@
-import { MOCK_COMPANIES } from '../data/companies'
-import { MOCK_USERS } from '../data/users'
-import { MOCK_JOBS } from '../data/jobs'
-import { MOCK_APPLICATIONS } from '../data/applications'
+import {
+  getCompanies,
+  setCompanies,
+  getCompanyById as getCompanyFromStore,
+  createCompany as createCompanyInStore,
+  updateCompany as updateCompanyInStore,
+  deleteCompany as deleteCompanyFromStore,
+  getUsers,
+  getJobs,
+  getApplications,
+  generateId,
+} from '@/lib/stores/data-store'
 import type { Company } from '@/types'
 
 // =============================================================================
@@ -55,16 +63,6 @@ export const COMPANY_INDUSTRIES = [
 ] as const
 
 // =============================================================================
-// In-Memory State
-// =============================================================================
-
-// Clone the companies data to allow modifications
-let companiesState: (Company & { status: CompanyStatus })[] = MOCK_COMPANIES.map((c) => ({
-  ...c,
-  status: 'active' as CompanyStatus,
-}))
-
-// =============================================================================
 // Helper Functions
 // =============================================================================
 
@@ -102,15 +100,27 @@ function calculateCompanyStats(companyId: string): {
   openJobs: number
   totalApplications: number
 } {
-  const totalUsers = MOCK_USERS.filter((u) => u.companyId === companyId).length
-  const companyJobs = MOCK_JOBS.filter((j) => j.companyId === companyId)
+  const users = getUsers()
+  const jobs = getJobs()
+  const applications = getApplications()
+
+  const totalUsers = users.filter((u) => u.companyId === companyId).length
+  const companyJobs = jobs.filter((j) => j.companyId === companyId)
   const openJobs = companyJobs.filter((j) => j.status === 'open').length
   const jobIds = companyJobs.map((j) => j.id)
-  const totalApplications = MOCK_APPLICATIONS.filter((a) =>
+  const totalApplications = applications.filter((a) =>
     jobIds.includes(a.jobId)
   ).length
 
   return { totalUsers, openJobs, totalApplications }
+}
+
+// Helper to get companies with status (adds status field if missing)
+function getCompaniesWithStatus(): (Company & { status: CompanyStatus })[] {
+  return getCompanies().map((c) => ({
+    ...c,
+    status: (c as Company & { status?: CompanyStatus }).status || 'active',
+  }))
 }
 
 // =============================================================================
@@ -126,7 +136,7 @@ export async function getMockCompaniesWithStats(
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 300))
 
-  let filtered = [...companiesState]
+  let filtered = getCompaniesWithStatus()
 
   // Apply search filter
   if (filters?.search) {
@@ -163,11 +173,12 @@ export async function getMockCompanyWithStats(
 ): Promise<CompanyWithStats | null> {
   await new Promise((resolve) => setTimeout(resolve, 200))
 
-  const company = companiesState.find((c) => c.id === companyId)
+  const company = getCompanyFromStore(companyId)
   if (!company) return null
 
   return {
     ...company,
+    status: (company as Company & { status?: CompanyStatus }).status || 'active',
     ...calculateCompanyStats(companyId),
   }
 }
@@ -180,7 +191,9 @@ export async function createMockCompany(
 ): Promise<CompanyWithStats> {
   await new Promise((resolve) => setTimeout(resolve, 500))
 
-  const newId = (Math.max(...companiesState.map((c) => parseInt(c.id))) + 1).toString()
+  const companies = getCompanies()
+  const maxId = Math.max(...companies.map((c) => parseInt(c.id) || 0), 0)
+  const newId = (maxId + 1).toString()
   const now = new Date().toISOString()
 
   const newCompany: Company & { status: CompanyStatus } = {
@@ -209,7 +222,7 @@ export async function createMockCompany(
     status: data.status,
   }
 
-  companiesState.push(newCompany)
+  createCompanyInStore(newCompany as Company)
 
   return {
     ...newCompany,
@@ -228,35 +241,33 @@ export async function updateMockCompany(
 ): Promise<CompanyWithStats | null> {
   await new Promise((resolve) => setTimeout(resolve, 400))
 
-  const index = companiesState.findIndex((c) => c.id === companyId)
-  if (index === -1) return null
+  const existing = getCompanyFromStore(companyId)
+  if (!existing) return null
 
-  const existing = companiesState[index]
-  const updated: Company & { status: CompanyStatus } = {
-    ...existing,
-    name: data.name ?? existing.name,
-    description: data.description ?? existing.description,
-    industry: data.industry ?? existing.industry,
-    location: data.headquarters ?? existing.location,
-    logo: data.logo ?? existing.logo,
-    status: data.status ?? existing.status,
-    size:
-      data.employeeCount !== undefined
-        ? data.employeeCount > 5000
-          ? 'enterprise'
-          : data.employeeCount > 1000
-            ? 'large'
-            : data.employeeCount > 100
-              ? 'medium'
-              : 'small'
-        : existing.size,
-    updatedAt: new Date().toISOString(),
+  const updates: Partial<Company & { status: CompanyStatus }> = {}
+
+  if (data.name !== undefined) updates.name = data.name
+  if (data.description !== undefined) updates.description = data.description
+  if (data.industry !== undefined) updates.industry = data.industry
+  if (data.headquarters !== undefined) updates.location = data.headquarters
+  if (data.logo !== undefined) updates.logo = data.logo
+  if (data.status !== undefined) (updates as { status: CompanyStatus }).status = data.status
+  if (data.employeeCount !== undefined) {
+    updates.size = data.employeeCount > 5000
+      ? 'enterprise'
+      : data.employeeCount > 1000
+        ? 'large'
+        : data.employeeCount > 100
+          ? 'medium'
+          : 'small'
   }
 
-  companiesState[index] = updated
+  const updated = updateCompanyInStore(companyId, updates)
+  if (!updated) return null
 
   return {
     ...updated,
+    status: (updated as Company & { status?: CompanyStatus }).status || 'active',
     ...calculateCompanyStats(companyId),
   }
 }
@@ -269,11 +280,8 @@ export async function deleteMockCompany(
 ): Promise<{ success: boolean }> {
   await new Promise((resolve) => setTimeout(resolve, 400))
 
-  const index = companiesState.findIndex((c) => c.id === companyId)
-  if (index === -1) return { success: false }
-
-  companiesState.splice(index, 1)
-  return { success: true }
+  const success = deleteCompanyFromStore(companyId)
+  return { success }
 }
 
 /**
@@ -284,14 +292,18 @@ export async function toggleMockCompanyStatus(
 ): Promise<CompanyWithStats | null> {
   await new Promise((resolve) => setTimeout(resolve, 300))
 
-  const company = companiesState.find((c) => c.id === companyId)
+  const company = getCompanyFromStore(companyId)
   if (!company) return null
 
-  company.status = company.status === 'active' ? 'inactive' : 'active'
-  company.updatedAt = new Date().toISOString()
+  const currentStatus = (company as Company & { status?: CompanyStatus }).status || 'active'
+  const newStatus: CompanyStatus = currentStatus === 'active' ? 'inactive' : 'active'
+
+  const updated = updateCompanyInStore(companyId, { status: newStatus } as Partial<Company>)
+  if (!updated) return null
 
   return {
-    ...company,
+    ...updated,
+    status: newStatus,
     ...calculateCompanyStats(companyId),
   }
 }
@@ -306,15 +318,10 @@ export async function bulkUpdateMockCompanyStatus(
   await new Promise((resolve) => setTimeout(resolve, 600))
 
   let updated = 0
-  const now = new Date().toISOString()
 
   for (const companyId of companyIds) {
-    const company = companiesState.find((c) => c.id === companyId)
-    if (company) {
-      company.status = status
-      company.updatedAt = now
-      updated++
-    }
+    const result = updateCompanyInStore(companyId, { status } as Partial<Company>)
+    if (result) updated++
   }
 
   return { success: true, updated }
@@ -324,15 +331,12 @@ export async function bulkUpdateMockCompanyStatus(
  * Get unique industries from companies
  */
 export function getCompanyIndustries(): string[] {
-  return [...new Set(companiesState.map((c) => c.industry))].sort()
+  return [...new Set(getCompanies().map((c) => c.industry))].sort()
 }
 
 /**
- * Reset companies state (for testing)
+ * Reset companies state (now handled by resetDataStore)
  */
 export function resetCompaniesState(): void {
-  companiesState = MOCK_COMPANIES.map((c) => ({
-    ...c,
-    status: 'active' as CompanyStatus,
-  }))
+  console.log('[Companies] Use resetDataStore() to reset all data')
 }

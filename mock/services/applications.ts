@@ -1,8 +1,15 @@
 import type { Application, ApplicationStatus, ExperienceLevel } from '@/types'
 import type { PaginatedResponse, Pagination, ApplicationFilters, ApplicationSubmission } from '@/types/api'
-import { MOCK_APPLICATIONS, getCurrentUserApplications } from '../data/applications'
-import { MOCK_JOBS } from '../data/jobs'
-import { MOCK_USERS } from '../data/users'
+import {
+  getApplications,
+  setApplications,
+  getApplicationById as getAppFromStore,
+  createApplication as createAppInStore,
+  updateApplication as updateAppInStore,
+  getJobs,
+  getUsers,
+  generateId,
+} from '@/lib/stores/data-store'
 import { parseISO, isAfter, isBefore } from 'date-fns'
 
 export interface ExtendedApplicationFilters extends ApplicationFilters {
@@ -13,15 +20,11 @@ export interface ExtendedApplicationFilters extends ApplicationFilters {
   sortBy?: 'newest' | 'oldest' | 'status'
 }
 
-// In-memory store for new applications created during the session
-let sessionApplications: Application[] = []
-let nextId = 1000
-
 /**
  * Get mock applications with filtering and pagination
  */
 export function getMockApplications(filters?: ExtendedApplicationFilters): PaginatedResponse<Application> {
-  let filteredApplications = [...MOCK_APPLICATIONS, ...sessionApplications]
+  let filteredApplications = [...getApplications()]
 
   // Apply user ID filter
   if (filters?.userId) {
@@ -116,30 +119,23 @@ export function getMockApplications(filters?: ExtendedApplicationFilters): Pagin
  * Get application by ID
  */
 export function getMockApplicationById(id: string): Application | null {
-  return (
-    MOCK_APPLICATIONS.find(app => app.id === id) ||
-    sessionApplications.find(app => app.id === id) ||
-    null
-  )
+  return getAppFromStore(id) || null
 }
 
 /**
  * Get current user's applications
  */
 export function getMockCurrentUserApplications(): Application[] {
-  const currentUserApps = getCurrentUserApplications()
-  const sessionCurrentUserApps = sessionApplications.filter(app => app.userId === '1')
-  return [...currentUserApps, ...sessionCurrentUserApps]
+  const currentUser = getUsers()[0]
+  if (!currentUser) return []
+  return getApplications().filter(app => app.userId === currentUser.id)
 }
 
 /**
  * Get applications for a specific job
  */
 export function getMockApplicationsByJob(jobId: string): Application[] {
-  return [
-    ...MOCK_APPLICATIONS.filter(app => app.jobId === jobId),
-    ...sessionApplications.filter(app => app.jobId === jobId),
-  ]
+  return getApplications().filter(app => app.jobId === jobId)
 }
 
 /**
@@ -149,16 +145,19 @@ export async function createMockApplication(data: ApplicationSubmission): Promis
   // Simulate API delay (1 second as per spec)
   await new Promise(resolve => setTimeout(resolve, 1000))
 
-  const job = MOCK_JOBS.find(j => j.id === data.jobId)
+  const job = getJobs().find(j => j.id === data.jobId)
   if (!job) {
     throw new Error('Job not found')
   }
 
-  const currentUser = MOCK_USERS[0]
+  const currentUser = getUsers()[0]
+  if (!currentUser) {
+    throw new Error('User not found')
+  }
 
   const newApplication: Application = {
-    id: `session-${nextId++}`,
-    uuid: `app-session-${nextId.toString().padStart(3, '0')}`,
+    id: generateId(),
+    uuid: `app-${generateId()}`,
     jobId: data.jobId,
     jobTitle: job.title,
     userId: currentUser.id,
@@ -168,13 +167,13 @@ export async function createMockApplication(data: ApplicationSubmission): Promis
     userExperienceLevel: 'senior' as ExperienceLevel,
     status: 'submitted',
     coverLetter: data.coverLetter,
-    resumeUrl: URL.createObjectURL(data.resumeFile),
+    resumeUrl: data.resumeFile ? URL.createObjectURL(data.resumeFile) : '/documents/resume.pdf',
     appliedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }
 
-  sessionApplications.push(newApplication)
+  createAppInStore(newApplication)
   return newApplication
 }
 
@@ -189,31 +188,13 @@ export async function updateMockApplicationStatus(
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500))
 
-  // Check in mock applications
-  const mockIndex = MOCK_APPLICATIONS.findIndex(app => app.id === id)
-  if (mockIndex !== -1) {
-    MOCK_APPLICATIONS[mockIndex] = {
-      ...MOCK_APPLICATIONS[mockIndex],
-      status,
-      notes: notes || MOCK_APPLICATIONS[mockIndex].notes,
-      updatedAt: new Date().toISOString(),
-    }
-    return MOCK_APPLICATIONS[mockIndex]
+  const updates: Partial<Application> = { status }
+  if (notes) {
+    updates.notes = notes
   }
 
-  // Check in session applications
-  const sessionIndex = sessionApplications.findIndex(app => app.id === id)
-  if (sessionIndex !== -1) {
-    sessionApplications[sessionIndex] = {
-      ...sessionApplications[sessionIndex],
-      status,
-      notes: notes || sessionApplications[sessionIndex].notes,
-      updatedAt: new Date().toISOString(),
-    }
-    return sessionApplications[sessionIndex]
-  }
-
-  return null
+  const updated = updateAppInStore(id, updates)
+  return updated || null
 }
 
 /**
@@ -227,18 +208,14 @@ export async function withdrawMockApplication(id: string): Promise<Application |
  * Check if user has already applied to a job
  */
 export function hasUserAppliedToJob(userId: string, jobId: string): boolean {
-  return (
-    MOCK_APPLICATIONS.some(app => app.userId === userId && app.jobId === jobId) ||
-    sessionApplications.some(app => app.userId === userId && app.jobId === jobId)
-  )
+  return getApplications().some(app => app.userId === userId && app.jobId === jobId)
 }
 
 /**
  * Get application count by status
  */
 export function getMockApplicationCountByStatus(): Record<ApplicationStatus, number> {
-  const allApplications = [...MOCK_APPLICATIONS, ...sessionApplications]
-  return allApplications.reduce((acc, app) => {
+  return getApplications().reduce((acc, app) => {
     acc[app.status] = (acc[app.status] || 0) + 1
     return acc
   }, {} as Record<ApplicationStatus, number>)
@@ -248,15 +225,15 @@ export function getMockApplicationCountByStatus(): Record<ApplicationStatus, num
  * Get total application count
  */
 export function getMockApplicationCount(): number {
-  return MOCK_APPLICATIONS.length + sessionApplications.length
+  return getApplications().length
 }
 
 /**
- * Reset session applications (for testing)
+ * Reset session applications (now resets to initial data)
  */
 export function resetSessionApplications(): void {
-  sessionApplications = []
-  nextId = 1000
+  // This is now handled by resetDataStore in data-store.ts
+  console.log('[Applications] Use resetDataStore() to reset all data')
 }
 
 // Timeline event type
@@ -348,8 +325,7 @@ function generateMockTimeline(application: Application): TimelineEvent[] {
  * Get related applications (same applicant email, different jobs)
  */
 function getRelatedApplications(application: Application): Application[] {
-  const allApplications = [...MOCK_APPLICATIONS, ...sessionApplications]
-  return allApplications.filter(
+  return getApplications().filter(
     app => app.userEmail === application.userEmail && app.id !== application.id
   )
 }
@@ -362,7 +338,7 @@ export function getMockApplicantDetail(id: string): ApplicantDetail | null {
   if (!application) return null
 
   // Find the user to get phone and location
-  const user = MOCK_USERS.find(u => u.id === application.userId)
+  const user = getUsers().find(u => u.id === application.userId)
 
   return {
     ...application,

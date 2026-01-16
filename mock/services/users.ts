@@ -1,6 +1,10 @@
 import type { User, UserRole } from '@/types'
 import type { PaginatedResponse, Pagination } from '@/types/api'
-import { MOCK_USERS, getCurrentUser as getUser } from '../data/users'
+import {
+  getUsers,
+  getUserById as getUserFromStore,
+  getUserByEmail as getUserByEmailFromStore,
+} from '@/lib/stores/data-store'
 
 export interface UserFilters {
   search?: string
@@ -17,14 +21,15 @@ export interface UserFilters {
  * Get the current authenticated user
  */
 export function getMockCurrentUser(): User {
-  return getUser()
+  const users = getUsers()
+  return users[0]
 }
 
 /**
  * Get mock users with filtering and pagination
  */
 export function getMockUsers(filters?: UserFilters): PaginatedResponse<User> {
-  let filteredUsers = [...MOCK_USERS]
+  let filteredUsers = [...getUsers()]
 
   // Apply search filter
   if (filters?.search) {
@@ -102,37 +107,35 @@ export function getMockUsers(filters?: UserFilters): PaginatedResponse<User> {
  * Get user by ID
  */
 export function getMockUserById(id: string): User | null {
-  return MOCK_USERS.find(user => user.id === id) || null
+  return getUserFromStore(id) || null
 }
 
 /**
  * Get user by email
  */
 export function getMockUserByEmail(email: string): User | null {
-  return MOCK_USERS.find(user =>
-    user.email.toLowerCase() === email.toLowerCase()
-  ) || null
+  return getUserByEmailFromStore(email) || null
 }
 
 /**
  * Get users by role
  */
 export function getMockUsersByRole(role: UserRole): User[] {
-  return MOCK_USERS.filter(user => user.role === role)
+  return getUsers().filter(user => user.role === role)
 }
 
 /**
  * Get users by company
  */
 export function getMockUsersByCompany(companyId: string): User[] {
-  return MOCK_USERS.filter(user => user.companyId === companyId)
+  return getUsers().filter(user => user.companyId === companyId)
 }
 
 /**
  * Get unique departments
  */
 export function getMockDepartments(): string[] {
-  const departments = new Set(MOCK_USERS.map(user => user.department))
+  const departments = new Set(getUsers().map(user => user.department))
   return Array.from(departments).sort()
 }
 
@@ -140,14 +143,14 @@ export function getMockDepartments(): string[] {
  * Get user count
  */
 export function getMockUserCount(): number {
-  return MOCK_USERS.length
+  return getUsers().length
 }
 
 /**
  * Get user count by role
  */
 export function getMockUserCountByRole(): Record<UserRole, number> {
-  return MOCK_USERS.reduce((acc, user) => {
+  return getUsers().reduce((acc, user) => {
     acc[user.role] = (acc[user.role] || 0) + 1
     return acc
   }, {} as Record<UserRole, number>)
