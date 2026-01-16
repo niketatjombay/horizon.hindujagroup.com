@@ -92,9 +92,6 @@ export default function CHRODashboardPage() {
   const { user } = useAuth()
   const [timeRange, setTimeRange] = useState<TimeRange>('30d')
   const [companyFilter, setCompanyFilter] = useState<string>('all')
-  const [functionFilter, setFunctionFilter] = useState<string>('all')
-  const [jobLevelFilter, setJobLevelFilter] = useState<string>('all')
-  const [locationFilter, setLocationFilter] = useState<string>('all')
 
   const stats = MOCK_STATS[timeRange]
   const firstName = user?.firstName || 'there'
@@ -193,10 +190,10 @@ export default function CHRODashboardPage() {
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <Filter className="h-4 w-4" />
-          <span className="font-medium">Filters:</span>
+          <span className="font-medium">Filter by Company:</span>
         </div>
         <Select value={companyFilter} onValueChange={setCompanyFilter}>
-          <SelectTrigger className="w-[160px] h-9 bg-white">
+          <SelectTrigger className="w-[180px] h-9 bg-white">
             <SelectValue placeholder="All Companies" />
           </SelectTrigger>
           <SelectContent>
@@ -204,41 +201,6 @@ export default function CHRODashboardPage() {
             {MOCK_COMPANY_DATA.map((c) => (
               <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>
             ))}
-          </SelectContent>
-        </Select>
-        <Select value={functionFilter} onValueChange={setFunctionFilter}>
-          <SelectTrigger className="w-[140px] h-9 bg-white">
-            <SelectValue placeholder="All Functions" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Functions</SelectItem>
-            <SelectItem value="engineering">Engineering</SelectItem>
-            <SelectItem value="operations">Operations</SelectItem>
-            <SelectItem value="finance">Finance</SelectItem>
-            <SelectItem value="hr">HR</SelectItem>
-            <SelectItem value="sales">Sales</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={jobLevelFilter} onValueChange={setJobLevelFilter}>
-          <SelectTrigger className="w-[130px] h-9 bg-white">
-            <SelectValue placeholder="Job Level" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Levels</SelectItem>
-            <SelectItem value="lateral">Lateral</SelectItem>
-            <SelectItem value="promotion">Promotion</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={locationFilter} onValueChange={setLocationFilter}>
-          <SelectTrigger className="w-[140px] h-9 bg-white">
-            <SelectValue placeholder="Location" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Locations</SelectItem>
-            <SelectItem value="mumbai">Mumbai</SelectItem>
-            <SelectItem value="chennai">Chennai</SelectItem>
-            <SelectItem value="bangalore">Bangalore</SelectItem>
-            <SelectItem value="delhi">Delhi</SelectItem>
           </SelectContent>
         </Select>
       </div>

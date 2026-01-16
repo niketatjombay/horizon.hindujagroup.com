@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 }
 
 const HR_NAV_LINKS = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/jobs', label: 'Jobs' },
-  { href: '/applicants', label: 'Applicants' },
+  { href: '/hr/dashboard', label: 'Dashboard' },
+  { href: '/hr/jobs', label: 'Jobs' },
+  { href: '/hr/applicants', label: 'Applicants' },
 ]
 
 export default function HRLayout({

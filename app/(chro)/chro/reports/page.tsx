@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { FileText } from 'lucide-react'
-import type { Metadata } from 'next'
 import {
   ReportTypeSelector,
   ReportFiltersSidebar,
@@ -29,12 +28,19 @@ import {
   useTimeToHireReport,
   usePipelineAnalysisReport,
 } from '@/lib/hooks/use-chro-reports'
-import { exportReport, getExportColumns } from '@/lib/utils/export-helpers'
+import { exportReport } from '@/lib/utils/export-helpers'
+import { getDateRangeFromPreset } from '@/mock'
 
 export default function ReportsPage() {
+  // Initialize filters with proper date range from preset
+  const initialFilters = useMemo<ReportFiltersType>(() => ({
+    ...DEFAULT_REPORT_FILTERS,
+    dateRange: getDateRangeFromPreset(DEFAULT_REPORT_FILTERS.preset),
+  }), [])
+
   // State
   const [reportType, setReportType] = useState<ReportType>('hiring-overview')
-  const [filters, setFilters] = useState<ReportFiltersType>(DEFAULT_REPORT_FILTERS)
+  const [filters, setFilters] = useState<ReportFiltersType>(initialFilters)
   const [drillDownContext, setDrillDownContext] = useState<DrillDownContext | null>(null)
   const [isDrillDownOpen, setIsDrillDownOpen] = useState(false)
 
