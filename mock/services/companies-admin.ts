@@ -68,9 +68,33 @@ let companiesState: (Company & { status: CompanyStatus })[] = MOCK_COMPANIES.map
 // Helper Functions
 // =============================================================================
 
+// Color palette for company logos
+const COMPANY_COLORS = [
+  '0066FF', // Primary blue
+  '7B61FF', // Purple
+  '00B87C', // Green
+  'FFA733', // Orange
+  'E63946', // Red
+  '2EC4B6', // Teal
+  '9B5DE5', // Violet
+  'F15BB5', // Pink
+  '00BBF9', // Sky blue
+  '8338EC', // Deep purple
+]
+
+function getCompanyColor(companyName: string): string {
+  let hash = 0
+  for (let i = 0; i < companyName.length; i++) {
+    hash = companyName.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const index = Math.abs(hash) % COMPANY_COLORS.length
+  return COMPANY_COLORS[index]
+}
+
 function generateLogoUrl(companyName: string): string {
   const encodedName = encodeURIComponent(companyName)
-  return `https://ui-avatars.com/api/?name=${encodedName}&size=48&background=0066FF&color=fff&bold=true`
+  const bgColor = getCompanyColor(companyName)
+  return `https://ui-avatars.com/api/?name=${encodedName}&size=48&background=${bgColor}&color=fff&bold=true`
 }
 
 function calculateCompanyStats(companyId: string): {
